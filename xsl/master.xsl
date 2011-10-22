@@ -13,7 +13,7 @@
  extension-element-prefixes="func"
  exclude-result-prefixes="exsl func php"
 >
-  <xsl:output method="html" encoding="iso-8859-1" indent="no"/>
+  <xsl:output method="html" encoding="utf-8" indent="no"/>
   <xsl:param name="__page"/>
   <xsl:param name="__frame"/>
   <xsl:param name="__state"/>

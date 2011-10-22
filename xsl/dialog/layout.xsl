@@ -21,6 +21,7 @@
    ! Template that matches on the root node and defines the site layout
    !-->
   <xsl:template match="/">
+    <xsl:text disable-output-escaping="yes">&lt;!DOCTYPE html&gt;</xsl:text>
     <html xmlns:og="http://ogp.me/ns#">
       <head>
         <title>
@@ -73,44 +74,34 @@
         ]]></script>
       </head>
       <body onKeyUp="handleKey(event)">
-        <center>
-          <!-- main content -->
-          <table border="0" cellspacing="0" class="main">
-            <tr id="header">
-              <xsl:call-template name="gutter"/>
-              <td width="690" class="gutter" id="menu">
-                <a id="active" href="{func:linkPage(0)}">
-                  Home
-                </a><a href="{func:link('bydate')}">
-                  By Date
-                </a><a href="{func:link('bytopic')}">
-                  By Topic
-                </a>
-              </td>
-            </tr>
-            <tr>
-              <td colspan="4">
-                <div class="content">
-                  <xsl:call-template name="content"/>
-                </div>
-              </td>
-            </tr>
-          </table>
+        <!-- main content -->
+        <div id="screen">
+          <div id="header">
+            <xsl:call-template name="gutter"/>
+            <ul>
+              <li><a id="active" href="{func:linkPage(0)}">Home</a></li>
+              <li><a href="{func:link('bydate')}">By Date</a></li>
+              <li><a href="{func:link('bytopic')}">By Topic</a></li>
+            </ul>
+          </div>
+          <div class="content">
+            <xsl:call-template name="content"/>
+          </div>
           
           <!-- footer -->
-          <table border="0" cellspacing="0" cellpadding="2" class="footer">
-            <tr>
-              <td><small>&#169; <xsl:value-of select="/formresult/config/copyright"/></small></td>
-              <td align="right">
-                <xsl:for-each select="/formresult/links/link">
+          <div id="footer">
+            <span>&#169; <xsl:value-of select="/formresult/config/copyright"/></span>
+            <ul>
+              <xsl:for-each select="/formresult/links/link">
+                <li>
                   <a href="{@href}">
                     <img border="0" src="/image/{@id}.png" hspace="1" width="80" height="15" alt="{@id}"/>
                   </a>
-                </xsl:for-each>
-              </td>
-            </tr>
-          </table>
-        </center>
+                </li>
+              </xsl:for-each>
+            </ul>
+          </div>
+        </div>
       </body>
     </html>
   </xsl:template>
@@ -120,7 +111,7 @@
     <xsl:param name="max" select="/formresult/config/gutters"/>
     
     <xsl:if test="$current &lt; $max">
-      <td width="60" class="gutter" id="gutter{$current+ 1}">&#160;</td>
+      <div class="gutter" id="gutter{$current+ 1}">&#160;</div>
       <xsl:call-template name="gutter">
         <xsl:with-param name="current" select="$current+ 1"/>
         <xsl:with-param name="max" select="$max"/>
