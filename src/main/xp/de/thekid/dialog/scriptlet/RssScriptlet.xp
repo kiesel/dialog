@@ -52,6 +52,9 @@ class RssScriptlet extends HttpScriptlet {
       
       case 'EntryCollection':
         return $this.urlFor($item.entryAt(0));
+
+      case 'ImageStrip':
+        return sprintf('%s/xml/dialog.en_US/imagestrip?%s', $item.getName());
     }
   }
 
@@ -133,6 +136,7 @@ class RssScriptlet extends HttpScriptlet {
         case 'Update': $this.addUpdateItem($rdf, $entry); break;
         case 'SingleShot': $this.addSingleShotItem($rdf, $entry); break;
         case 'EntryCollection': $this.addEntryCollectionItem($rdf, $entry); break;
+        case 'ImageStrip': $this.addImageStripItem($rdf, $entry); break;
         default: break;
       }
     }
