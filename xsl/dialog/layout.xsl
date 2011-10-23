@@ -76,14 +76,22 @@
       <body onKeyUp="handleKey(event)">
         <!-- main content -->
         <div id="screen">
-          <header>
-            <xsl:call-template name="gutter"/>
-            <ul>
-              <li><a id="active" href="{func:linkPage(0)}">Home</a></li>
-              <li><a href="{func:link('bydate')}">By Date</a></li>
-              <li><a href="{func:link('bytopic')}">By Topic</a></li>
-            </ul>
-          </header>
+          <div id="header">
+            <div class="title">
+              <xsl:value-of select="/formresult/config/title"/>
+            </div>
+            <div class="breadcrumb">
+              <xsl:call-template name="breadcrumb"/>
+            </div>
+            <div class="topnav">
+              <ul>
+                <li><a id="active" href="{func:linkPage(0)}">Home</a></li>
+                <li><a href="{func:link('bydate')}">By Date</a></li>
+                <li><a href="{func:link('bytopic')}">By Topic</a></li>
+              </ul>
+            </div>
+            <div class="endsection"/>
+          </div>
           <div class="content">
             <xsl:call-template name="content"/>
           </div>
@@ -100,6 +108,7 @@
                 </li>
               </xsl:for-each>
             </ul>
+            <div class="endsection"/>
           </footer>
         </div>
       </body>

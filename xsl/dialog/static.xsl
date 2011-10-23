@@ -49,25 +49,25 @@
    ! @purpose  Links to previous and next
    !-->
   <xsl:template name="pager">
-    <nav>
-      <a title="Newer entries" class="pager{/formresult/pager/@offset &gt; 0}" id="previous">
+    <nav class="pager">
+      <a title="Newer entries" class="pager previous pager{/formresult/pager/@offset &gt; 0}">
         <xsl:if test="/formresult/pager/@offset &gt; 0">
           <xsl:attribute name="href"><xsl:value-of select="func:linkPage(/formresult/pager/@offset - 1)"/></xsl:attribute>
         </xsl:if>
-        <img alt="&#xab;" src="/image/prev.gif" border="0" width="19" height="15"/>
+        &#8592; previous
       </a>
-      <a title="Older entries" class="pager{(/formresult/pager/@offset + 1) * /formresult/pager/@perpage &lt; /formresult/pager/@total}" id="next">
+      <a title="Older entries" class="pager next pager{(/formresult/pager/@offset + 1) * /formresult/pager/@perpage &lt; /formresult/pager/@total}">
         <xsl:if test="(/formresult/pager/@offset + 1) * /formresult/pager/@perpage &lt; /formresult/pager/@total">
           <xsl:attribute name="href"><xsl:value-of select="func:linkPage(/formresult/pager/@offset + 1)"/></xsl:attribute>
         </xsl:if>
-        <img alt="&#xbb;" src="/image/next.gif" border="0" width="19" height="15"/>
+        next &#8594;
       </a>
     </nav>
   </xsl:template>
 
   <xsl:template name="entry-date">
     <time>
-      <xsl:value-of select="php:function('XSLCallback::invoke', 'xp.date', 'format', string(created/value), 'l, F dS Y')"/>
+      <xsl:value-of select="php:function('XSLCallback::invoke', 'xp.date', 'format', string(created/value), 'l, F jS, Y')"/>
     </time>
   </xsl:template>
   
@@ -85,7 +85,7 @@
       </h1>
       <xsl:call-template name="entry-date"/>
 
-      <div class="textcontainer">
+      <div class="teaser-hl-text">
         <div class="highlightpane">
           <h2>Highlights</h2>
           <xsl:for-each select="highlights/highlight">
@@ -96,14 +96,16 @@
             </div>
           </xsl:for-each>
         </div>
-        <p class="description">
-          <xsl:apply-templates select="description"/>
-        </p>
-        <p>
-          This album contains <xsl:value-of select="@num_images"/> images in <xsl:value-of select="@num_chapters"/> chapters -
-          <a href="{func:linkAlbum(@name)}">See more</a>
-        </p>
+        <div class="text-padded">
+          <p class="description main-description">
+            <xsl:apply-templates select="description"/>
+          </p>
+          <p>
+            This album contains <xsl:value-of select="@num_images"/> images in <xsl:value-of select="@num_chapters"/> chapters -
+            <a href="{func:linkAlbum(@name)}">See more</a>
+          </p>
         </div>
+      </div>
       <div class="endsection"/>
     </section>
   </xsl:template>
@@ -217,29 +219,53 @@
         </a>
       </h1>
       <xsl:call-template name="entry-date"/>
+      <p class="description main-description">
+        <xsl:apply-templates select="description"/>
+      </p>
 
-      <div class="textcontainer">
-        <p>
-          <xsl:apply-templates select="description"/>
-        </p>
-
+      <div class="albums">
         <h2>Albums</h2>
         <div>
           <xsl:for-each select="entry[@type='de.thekid.dialog.Album']">
-            <div>
-              <a href="{func:linkAlbum(@name)}">
-                <img width="150" height="113" border="0" src="/albums/{@name}/thumb.{./highlights/highlight[1]/name}"/>
-              </a>
+            <div class="entryalbum">
+              <div class="highlightpane">
+                <div>
+                  <a href="{func:linkAlbum(@name)}">
+                    <img width="150" height="113" border="0" src="/albums/{@name}/thumb.{./highlights/highlight[1]/name}"/>
+                  </a>
+                </div>
+                <div>
+                  <a href="{func:linkAlbum(@name)}">
+                    <img width="150" height="113" border="0" src="/albums/{@name}/thumb.{./highlights/highlight[2]/name}"/>
+                  </a>
+                </div>
+                <div>
+                  <a href="{func:linkAlbum(@name)}">
+                    <img width="150" height="113" border="0" src="/albums/{@name}/thumb.{./highlights/highlight[3]/name}"/>
+                  </a>
+                </div>
+                <div>
+                  <a href="{func:linkAlbum(@name)}">
+                    <img width="150" height="113" border="0" src="/albums/{@name}/thumb.{./highlights/highlight[4]/name}"/>
+                  </a>
+                </div>
+              </div>
               <h3>
-                <xsl:value-of select="php:function('XSLCallback::invoke', 'xp.date', 'format', string(created/value), 'd M')"/>:
                 <a href="{func:linkAlbum(@name)}">
                   <xsl:value-of select="@title"/>
                 </a>
-                (<xsl:value-of select="@num_images"/> images in <xsl:value-of select="@num_chapters"/> chapters)
               </h3>
-              <p>
-                <xsl:apply-templates select="description"/>
-              </p>
+              <xsl:call-template name="entry-date"/>
+              <div class="text-padded">
+                <p class="description">
+                  <xsl:apply-templates select="description"/>
+                </p>
+                <p>
+                  This album contains <xsl:value-of select="@num_images"/> images in <xsl:value-of select="@num_chapters"/> chapters -
+                  <a href="{func:linkAlbum(@name)}">See more</a>
+                </p>
+              </div>
+              <div class="endsection"/>
             </div>
           </xsl:for-each>
         </div>
@@ -247,13 +273,7 @@
     </section>
   </xsl:template>
 
-  <!--
-   ! Template for content
-   !
-   ! @see      ../layout.xsl
-   ! @purpose  Define main content
-   !-->
-  <xsl:template name="content">
+  <xsl:template name="breadcrumb">
     <h1 id="breadcrumb">
       <a href="/">Home</a>
       <xsl:if test="/formresult/pager/@offset &gt; 0">
@@ -263,13 +283,21 @@
         </a>
       </xsl:if>
     </h1>
+  </xsl:template>
+
+  <!--
+   ! Template for content
+   !
+   ! @see      ../layout.xsl
+   ! @purpose  Define main content
+   !-->
+  <xsl:template name="content">
     <xsl:call-template name="pager"/>
 
     <xsl:for-each select="/formresult/entries/entry">
       <xsl:apply-templates select="."/>
     </xsl:for-each>
     
-    <br clear="all"/>
     <xsl:call-template name="pager"/>
   </xsl:template>
   
