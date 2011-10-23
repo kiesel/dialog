@@ -17,6 +17,13 @@
   <xsl:include href="links.inc.xsl"/>
   <xsl:include href="opengraph.inc.xsl"/>
   
+  <xsl:template name="entry-date">
+    <xsl:param name="date" select="created"/>
+    <time>
+      <xsl:value-of select="php:function('XSLCallback::invoke', 'xp.date', 'format', string($date/value), 'l, F jS, Y')"/>
+    </time>
+  </xsl:template>
+
   <!--
    ! Template that matches on the root node and defines the site layout
    !-->
@@ -76,7 +83,7 @@
       <body onKeyUp="handleKey(event)">
         <!-- main content -->
         <div id="screen">
-          <div id="header">
+          <header>
             <div class="title">
               <xsl:value-of select="/formresult/config/title"/>
             </div>
@@ -91,7 +98,7 @@
               </ul>
             </div>
             <div class="endsection"/>
-          </div>
+          </header>
           <div class="content">
             <xsl:call-template name="content"/>
           </div>
@@ -137,5 +144,27 @@
 
   <xsl:template name="page-head">
     <!-- No default implementation -->
+  </xsl:template>
+
+  <!--
+   ! Template for pager
+   !
+   ! @purpose  Links to previous and next
+   !-->
+  <xsl:template name="pager">
+    <nav class="pager">
+      <a title="Newer entries" class="pager previous pager{/formresult/pager/@offset &gt; 0}">
+        <xsl:if test="/formresult/pager/@offset &gt; 0">
+          <xsl:attribute name="href"><xsl:value-of select="func:linkPage(/formresult/pager/@offset - 1)"/></xsl:attribute>
+        </xsl:if>
+        &#8592; previous
+      </a>
+      <a title="Older entries" class="pager next pager{(/formresult/pager/@offset + 1) * /formresult/pager/@perpage &lt; /formresult/pager/@total}">
+        <xsl:if test="(/formresult/pager/@offset + 1) * /formresult/pager/@perpage &lt; /formresult/pager/@total">
+          <xsl:attribute name="href"><xsl:value-of select="func:linkPage(/formresult/pager/@offset + 1)"/></xsl:attribute>
+        </xsl:if>
+        next &#8594;
+      </a>
+    </nav>
   </xsl:template>
 </xsl:stylesheet>

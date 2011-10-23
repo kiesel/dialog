@@ -36,6 +36,35 @@
     <meta property="og:type" content="album" />
     <xsl:apply-templates select="/formresult/album" mode="og"/>
   </xsl:template>
+
+  <!--
+   ! Template for breadcrumb
+   !
+   ! @see       ../layout.xsl
+   !-->
+  <xsl:template name="breadcrumb">
+    <h3 id="breadcrumb">
+      <a href="{func:linkPage(0)}">Home</a> &#xbb;
+
+      <xsl:if test="/formresult/album/@page &gt; 0">
+        <a href="{func:linkPage(/formresult/album/@page)}">
+          Page #<xsl:value-of select="/formresult/album/@page"/>
+        </a>
+        &#xbb;
+      </xsl:if>
+
+      <xsl:if test="/formresult/album/collection">
+        <a href="{func:linkCollection(/formresult/album/collection/@name)}">
+          <xsl:value-of select="/formresult/album/collection/@title"/> Collection
+        </a>
+         &#xbb;
+      </xsl:if>
+
+      <a href="{func:linkAlbum(/formresult/album/@name)}">
+        <xsl:value-of select="/formresult/album/@title"/>
+      </a>
+    </h3>
+  </xsl:template>
   
   <!--
    ! Template for content
@@ -44,57 +73,29 @@
    ! @purpose  Define main content
    !-->
   <xsl:template name="content">
-    <h3>
-      <a href="{func:linkPage(0)}">Home</a> &#xbb; 
-      
-      <xsl:if test="/formresult/album/@page &gt; 0">
-        <a href="{func:linkPage(/formresult/album/@page)}">
-          Page #<xsl:value-of select="/formresult/album/@page"/>
-        </a>
-        &#xbb;
-      </xsl:if>
-     
-      <xsl:if test="/formresult/album/collection">
-        <a href="{func:linkCollection(/formresult/album/collection/@name)}">
-          <xsl:value-of select="/formresult/album/collection/@title"/> Collection
-        </a>
-         &#xbb;
-      </xsl:if>
-      
-      <a href="{func:linkAlbum(/formresult/album/@name)}">
+    <section class="teaser album">
+      <xsl:call-template name="entry-date">
+        <xsl:with-param name="date" select="/formresult/album/created"/>
+      </xsl:call-template>
+      <h2>
         <xsl:value-of select="/formresult/album/@title"/>
-      </a>
-    </h3>
-    <br clear="all"/>
+      </h2>
+      <p class="description main-description">
+        <xsl:apply-templates select="/formresult/album/description"/>
+      </p>
 
-    <div class="datebox">
-      <h2><xsl:value-of select="php:function('XSLCallback::invoke', 'xp.date', 'format', string(/formresult/album/created/value), 'd')"/></h2> 
-      <xsl:value-of select="php:function('XSLCallback::invoke', 'xp.date', 'format', string(/formresult/album/created/value), 'M Y')"/>
-    </div>
-    <h2>
-      <xsl:value-of select="/formresult/album/@title"/>
-    </h2>
-    <p align="justify">
-      <xsl:apply-templates select="/formresult/album/description"/>
-      <br clear="all"/>
-    </p>
-    
-    <h4>Highlights</h4>
-    <table class="highlights" border="0">
-      <tr>
+      <h4>Highlights</h4>
+      <div class="highlights">
         <xsl:for-each select="/formresult/album/highlights/highlight">
-          <td>
-            <a href="{func:linkImage(../../@name, 0, 'h', position()- 1)}">
-              <img width="150" height="113" border="0" src="/albums/{../../@name}/thumb.{name}"/>
-            </a>
-          </td>
+          <a href="{func:linkImage(../../@name, 0, 'h', position()- 1)}">
+            <img width="150" height="113" border="0" src="/albums/{../../@name}/thumb.{name}"/>
+          </a>
         </xsl:for-each>
-      </tr>
-    </table>
-    <p>
-      This album contains <xsl:value-of select="/formresult/album/@num_images"/> images in <xsl:value-of select="/formresult/album/@num_chapters"/> chapters.
-    </p>
-    <br clear="all"/>
+      </div>
+      <p class="description metadata endsection">
+        This album contains <xsl:value-of select="/formresult/album/@num_images"/> images in <xsl:value-of select="/formresult/album/@num_chapters"/> chapters.
+      </p>
+    </section>
 
     <xsl:for-each select="/formresult/album/chapters/chapter">
       <xsl:variable name="total" select="count(images/image)"/>
@@ -102,37 +103,33 @@
       <xsl:variable name="newest" select="images/image[$total]"/>
       <xsl:variable name="chapter" select="position() - 1"/>
 
-      <div class="datebox">
-        <h2><xsl:value-of select="position()"/></h2> 
-      </div>
-      <h2>
-        <a href="{func:linkChapter(../../@name, $chapter)}">
-          <xsl:value-of select="php:function('XSLCallback::invoke', 'xp.date', 'format', string(exsl:node-set($oldest)/exifData/dateTime/value), 'D, d M H:00')"/>
-        </a>
-      </h2>
-      <p>
-        This chapter contains
-        <xsl:choose>
-          <xsl:when test="$total = 1">1 image</xsl:when>
-          <xsl:otherwise><xsl:value-of select="$total"/> images</xsl:otherwise>
-        </xsl:choose>
-      </p>
+      <section class="teaser chapter">
+        <h2>
+          <a href="{func:linkChapter(../../@name, $chapter)}">
+            Chapter #<xsl:value-of select="position()"/>
+          </a>
+        </h2>
+        <xsl:call-template name="entry-date">
+          <xsl:with-param name="date" select="$oldest/exifData/dateTime"/>
+        </xsl:call-template>
+        <p class="description">
+          This chapter contains
+          <xsl:choose>
+            <xsl:when test="$total = 1">1 image</xsl:when>
+            <xsl:otherwise><xsl:value-of select="$total"/> images</xsl:otherwise>
+          </xsl:choose>
+        </p>
 
-      <table border="0" class="chapter">
-        <tr>
+        <div class="highlights">
           <xsl:for-each select="images/image">
             <xsl:variable name="pos" select="position()"/>
-            <xsl:if test="($pos &gt; 1) and ($pos mod 5 = 1)"><xsl:text disable-output-escaping="yes">&lt;tr></xsl:text></xsl:if>
-            <td>
-              <a href="{func:linkImage(../../../../@name, $chapter, 'i', position()- 1)}">
-                <img width="150" height="113" border="0" src="/albums/{../../../../@name}/thumb.{name}"/>
-              </a>
-            </td>
-            <xsl:if test="($pos mod 5 = 0) and ($pos != last())"><xsl:text disable-output-escaping="yes">&lt;/tr></xsl:text></xsl:if>
+            <a href="{func:linkImage(../../../../@name, $chapter, 'i', position()- 1)}">
+              <img width="150" height="113" border="0" src="/albums/{../../../../@name}/thumb.{name}"/>
+            </a>
           </xsl:for-each>
-        </tr>
-      </table>
-      <br/><br clear="all"/>
+        </div>
+        <div class="endsection"/>
+      </section>
     </xsl:for-each>
   </xsl:template>
   

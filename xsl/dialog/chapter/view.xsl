@@ -39,44 +39,14 @@
   </xsl:template>
 
   <!--
-   ! Function that draws the images of a chapter
+   ! Template for breadcrumb
    !
-   ! @see      ../layout.xsl
-   ! @purpose  Define main content
+   ! @see       ../layout.xsl
    !-->
-  <func:function name="func:chapter-images">
-    <xsl:param name="album"/>
-    <xsl:param name="chapter"/>
-    <xsl:param name="images"/>
-    <xsl:param name="i" select="1"/>
-    <xsl:param name="max" select="5"/>
-    
-    <func:result>
-      <tr>
-        <xsl:for-each select="exsl:node-set($images)/image[position() &gt;= $i and position() &lt; $i + $max]">
-          <td>
-            <a href="{func:linkImage($album, $chapter, 'i', $i - 2 + position())}">
-              <img width="150" height="113" border="0" src="/albums/{$album}/thumb.{name}"/>
-            </a>
-          </td>
-        </xsl:for-each>
-      </tr>
-      <xsl:if test="$i &lt; count(exsl:node-set($images)/image)">
-        <xsl:copy-of select="func:chapter-images($album, $chapter, exsl:node-set($images), $i + $max)"/>
-      </xsl:if>
-    </func:result>  
-  </func:function>
-  
-  <!--
-   ! Template for content
-   !
-   ! @see      ../layout.xsl
-   ! @purpose  Define main content
-   !-->
-  <xsl:template name="content">
-    <h3>
+  <xsl:template name="breadcrumb">
+    <h2 id="breadcrumb">
       <a href="{func:linkPage(0)}">Home</a> &#xbb;
-      
+
       <xsl:if test="/formresult/album/@page &gt; 0">
         <a href="{func:linkPage(/formresult/album/@page)}">
           Page #<xsl:value-of select="/formresult/album/@page"/>
@@ -90,62 +60,79 @@
         </a>
          &#xbb;
       </xsl:if>
- 
+
       <a href="{func:linkAlbum(/formresult/album/@name)}">
         <xsl:value-of select="/formresult/album/@title"/>
       </a>
-      &#xbb; 
+      &#xbb;
       <a href="{func:linkChapter(/formresult/album/@name, /formresult/chapter/@id - 1)}">
         Chapter #<xsl:value-of select="/formresult/chapter/@id"/>
       </a>
-    </h3>
-    <br clear="all"/>
+    </h2>
+  </xsl:template>
+  
+  <!--
+   ! Function that draws the images of a chapter
+   !
+   ! @see      ../layout.xsl
+   ! @purpose  Define main content
+   !-->
+  <func:function name="func:chapter-images">
+    <xsl:param name="album"/>
+    <xsl:param name="chapter"/>
+    <xsl:param name="images"/>
+    <xsl:param name="i" select="1"/>
+    <xsl:param name="max" select="5"/>
+    
+    <func:result>
+      <xsl:for-each select="exsl:node-set($images)/image[position() &gt;= $i and position() &lt; $i + $max]">
+        <a href="{func:linkImage($album, $chapter, 'i', $i - 2 + position())}">
+          <img width="150" height="113" border="0" src="/albums/{$album}/thumb.{name}"/>
+        </a>
+      </xsl:for-each>
+      <xsl:if test="$i &lt; count(exsl:node-set($images)/image)">
+        <xsl:copy-of select="func:chapter-images($album, $chapter, exsl:node-set($images), $i + $max)"/>
+      </xsl:if>
+    </func:result>  
+  </func:function>
 
+  <!--
+   ! Template for content
+   !
+   ! @see      ../layout.xsl
+   ! @purpose  Define main content
+   !-->
+  <xsl:template name="content">
     <xsl:variable name="total" select="count(/formresult/chapter/images/image)"/>
     <xsl:variable name="oldest" select="/formresult/chapter/images/image[1]"/>
 
-    <div class="datebox">
-      <h2><xsl:value-of select="/formresult/chapter/@id"/></h2> 
-    </div>
-    <h2>
-      <xsl:value-of select="php:function('XSLCallback::invoke', 'xp.date', 'format', string(exsl:node-set($oldest)/exifData/dateTime/value), 'D, d M H:00')"/>
-    </h2>
-    <p>
-      This chapter contains
-      <xsl:choose>
-        <xsl:when test="$total = 1">1 image</xsl:when>
-        <xsl:otherwise><xsl:value-of select="$total"/> images</xsl:otherwise>
-      </xsl:choose>
-    </p>
+    <xsl:call-template name="pager">
+      <xsl:with-param name="link-prev" select="func:linkChapter(/formresult/album/@name, /formresult/chapter/@previous)"/>
+      <xsl:with-param name="link-next" select="func:linkChapter(/formresult/album/@name, /formresult/chapter/@next)"/>
+    </xsl:call-template>
 
-    <center>
-      <a title="Previous image" class="pager{/formresult/chapter/@previous != ''}" id="previous">
-        <xsl:if test="/formresult/chapter/@previous != ''">
-          <xsl:attribute name="href"><xsl:value-of select="func:linkChapter(
-            /formresult/album/@name, 
-            /formresult/chapter/@previous
-          )"/></xsl:attribute>
-        </xsl:if>
-        <img alt="&#xab;" src="/image/prev.gif" border="0" width="19" height="15"/>
-      </a>
-      <a title="Next image" class="pager{/formresult/chapter/@next != ''}" id="next">
-        <xsl:if test="/formresult/chapter/@next != ''">
-          <xsl:attribute name="href"><xsl:value-of select="func:linkChapter(
-            /formresult/album/@name,
-            /formresult/chapter/@next
-          )"/></xsl:attribute>
-        </xsl:if>
-        <img alt="&#xbb;" src="/image/next.gif" border="0" width="19" height="15"/>
-      </a>
-    </center>
+    <section class="teaser chapter">
+      <xsl:call-template name="entry-date">
+        <xsl:with-param name="date" select="$oldest/exifData/dateTime"/>
+      </xsl:call-template>
 
-    <table border="0" class="chapter">
-      <xsl:copy-of select="func:chapter-images(
-        /formresult/album/@name, 
-        /formresult/chapter/@id - 1,
-        /formresult/chapter/images
-      )"/>
-    </table>
+      <h2>Chapter #<xsl:value-of select="/formresult/chapter/@id"/></h2>
+      <div class="highlights">
+        <xsl:copy-of select="func:chapter-images(
+          /formresult/album/@name,
+          /formresult/chapter/@id - 1,
+          /formresult/chapter/images
+        )"/>
+      </div>
+
+      <p class="description metadata endsection">
+        This chapter contains
+        <xsl:choose>
+          <xsl:when test="$total = 1">1 image</xsl:when>
+          <xsl:otherwise><xsl:value-of select="$total"/> images</xsl:otherwise>
+        </xsl:choose>
+      </p>
+    </section>
   </xsl:template>
   
 </xsl:stylesheet>

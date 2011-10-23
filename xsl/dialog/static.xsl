@@ -44,34 +44,6 @@
   </xsl:template>
 
   <!--
-   ! Template for pager
-   !
-   ! @purpose  Links to previous and next
-   !-->
-  <xsl:template name="pager">
-    <nav class="pager">
-      <a title="Newer entries" class="pager previous pager{/formresult/pager/@offset &gt; 0}">
-        <xsl:if test="/formresult/pager/@offset &gt; 0">
-          <xsl:attribute name="href"><xsl:value-of select="func:linkPage(/formresult/pager/@offset - 1)"/></xsl:attribute>
-        </xsl:if>
-        &#8592; previous
-      </a>
-      <a title="Older entries" class="pager next pager{(/formresult/pager/@offset + 1) * /formresult/pager/@perpage &lt; /formresult/pager/@total}">
-        <xsl:if test="(/formresult/pager/@offset + 1) * /formresult/pager/@perpage &lt; /formresult/pager/@total">
-          <xsl:attribute name="href"><xsl:value-of select="func:linkPage(/formresult/pager/@offset + 1)"/></xsl:attribute>
-        </xsl:if>
-        next &#8594;
-      </a>
-    </nav>
-  </xsl:template>
-
-  <xsl:template name="entry-date">
-    <time>
-      <xsl:value-of select="php:function('XSLCallback::invoke', 'xp.date', 'format', string(created/value), 'l, F jS, Y')"/>
-    </time>
-  </xsl:template>
-  
-  <!--
    ! Template for albums
    !
    ! @purpose  Specialized entry template
@@ -274,7 +246,7 @@
   </xsl:template>
 
   <xsl:template name="breadcrumb">
-    <h1 id="breadcrumb">
+    <h3 id="breadcrumb">
       <a href="/">Home</a>
       <xsl:if test="/formresult/pager/@offset &gt; 0">
         &#xbb;
@@ -282,7 +254,7 @@
           Page #<xsl:value-of select="/formresult/pager/@offset"/>
         </a>
       </xsl:if>
-    </h1>
+    </h3>
   </xsl:template>
 
   <!--
