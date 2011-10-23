@@ -64,6 +64,12 @@
       </a>
     </nav>
   </xsl:template>
+
+  <xsl:template name="entry-date">
+    <time>
+      <xsl:value-of select="php:function('XSLCallback::invoke', 'xp.date', 'format', string(created/value), 'l, F dS Y')"/>
+    </time>
+  </xsl:template>
   
   <!--
    ! Template for albums
@@ -71,33 +77,34 @@
    ! @purpose  Specialized entry template
    !-->
   <xsl:template match="entry[@type = 'de.thekid.dialog.Album']">
-    <section>
-      <time>
-        <xsl:value-of select="php:function('XSLCallback::invoke', 'xp.date', 'format', string(created/value), 'd M Y')"/>
-      </time>
+    <section class="teaser album">
       <h1>
         <a href="{func:linkAlbum(@name)}">
           <xsl:value-of select="@title"/>
         </a>
       </h1>
-      <p>
-        <xsl:apply-templates select="description"/>
-      </p>
+      <xsl:call-template name="entry-date"/>
 
-      <h2>Highlights</h2>
-      <div>
-        <xsl:for-each select="highlights/highlight">
-          <div>
-            <a href="{func:linkImage(../../@name, 0, 'h', position()- 1)}">
-              <img width="150" height="113" border="0" src="/albums/{../../@name}/thumb.{name}"/>
-            </a>
-          </div>
-        </xsl:for-each>
-      </div>
-      <p>
-        This album contains <xsl:value-of select="@num_images"/> images in <xsl:value-of select="@num_chapters"/> chapters -
-        <a href="{func:linkAlbum(@name)}">See more</a>
-      </p>
+      <div class="textcontainer">
+        <div class="highlightpane">
+          <h2>Highlights</h2>
+          <xsl:for-each select="highlights/highlight">
+            <div>
+              <a href="{func:linkImage(../../@name, 0, 'h', position()- 1)}">
+                <img width="150" height="113" border="0" src="/albums/{../../@name}/thumb.{name}"/>
+              </a>
+            </div>
+          </xsl:for-each>
+        </div>
+        <p class="description">
+          <xsl:apply-templates select="description"/>
+        </p>
+        <p>
+          This album contains <xsl:value-of select="@num_images"/> images in <xsl:value-of select="@num_chapters"/> chapters -
+          <a href="{func:linkAlbum(@name)}">See more</a>
+        </p>
+        </div>
+      <div class="endsection"/>
     </section>
   </xsl:template>
 
@@ -108,9 +115,7 @@
    !-->
   <xsl:template match="entry[@type = 'de.thekid.dialog.Update']">
     <section>
-      <time>
-        <xsl:value-of select="php:function('XSLCallback::invoke', 'xp.date', 'format', string(created/value), 'd M Y')"/>
-      </time>
+      <xsl:call-template name="entry-date"/>
       <h1>
         Updated: <xsl:value-of select="@title"/>
       </h1>
@@ -129,9 +134,7 @@
    !-->
   <xsl:template match="entry[@type = 'de.thekid.dialog.SingleShot']">
     <section>
-      <time>
-        <xsl:value-of select="php:function('XSLCallback::invoke', 'xp.date', 'format', string(created/value), 'd M Y')"/>
-      </time>
+      <xsl:call-template name="entry-date"/>
       <h1>
         Featured image: <xsl:value-of select="@title"/>
       </h1>
@@ -180,9 +183,7 @@
    !-->
   <xsl:template match="entry[@type = 'de.thekid.dialog.ImageStrip']">
     <section>
-      <time>
-        <xsl:value-of select="php:function('XSLCallback::invoke', 'xp.date', 'format', string(created/value), 'd M Y')"/>
-      </time>
+      <xsl:call-template name="entry-date"/>
       <h1>
         <a href="{func:linkImageStrip(@name)}">
           <xsl:value-of select="@title"/>
@@ -209,38 +210,39 @@
    ! @purpose  Specialized entry template
    !-->
   <xsl:template match="entry[@type = 'de.thekid.dialog.EntryCollection']">
-    <section>
-      <time>
-        <xsl:value-of select="php:function('XSLCallback::invoke', 'xp.date', 'format', string(created/value), 'd M Y')"/>
-      </time>
+    <section class="teaser entrycollection">
       <h1>
         <a href="{func:linkCollection(@name)}">
           Collection: <xsl:value-of select="@title"/>
         </a>
       </h1>
-      <p>
-        <xsl:apply-templates select="description"/>
-      </p>
+      <xsl:call-template name="entry-date"/>
 
-      <h2>Albums</h2>
-      <div>
-        <xsl:for-each select="entry[@type='de.thekid.dialog.Album']">
-          <div>
-            <a href="{func:linkAlbum(@name)}">
-              <img width="150" height="113" border="0" src="/albums/{@name}/thumb.{./highlights/highlight[1]/name}"/>
-            </a>
-            <h3>
-              <xsl:value-of select="php:function('XSLCallback::invoke', 'xp.date', 'format', string(created/value), 'd M')"/>:
+      <div class="textcontainer">
+        <p>
+          <xsl:apply-templates select="description"/>
+        </p>
+
+        <h2>Albums</h2>
+        <div>
+          <xsl:for-each select="entry[@type='de.thekid.dialog.Album']">
+            <div>
               <a href="{func:linkAlbum(@name)}">
-                <xsl:value-of select="@title"/>
+                <img width="150" height="113" border="0" src="/albums/{@name}/thumb.{./highlights/highlight[1]/name}"/>
               </a>
-              (<xsl:value-of select="@num_images"/> images in <xsl:value-of select="@num_chapters"/> chapters)
-            </h3>
-            <p>
-              <xsl:apply-templates select="description"/>
-            </p>
-          </div>
-        </xsl:for-each>
+              <h3>
+                <xsl:value-of select="php:function('XSLCallback::invoke', 'xp.date', 'format', string(created/value), 'd M')"/>:
+                <a href="{func:linkAlbum(@name)}">
+                  <xsl:value-of select="@title"/>
+                </a>
+                (<xsl:value-of select="@num_images"/> images in <xsl:value-of select="@num_chapters"/> chapters)
+              </h3>
+              <p>
+                <xsl:apply-templates select="description"/>
+              </p>
+            </div>
+          </xsl:for-each>
+        </div>
       </div>
     </section>
   </xsl:template>
@@ -252,7 +254,7 @@
    ! @purpose  Define main content
    !-->
   <xsl:template name="content">
-    <h1>
+    <h1 id="breadcrumb">
       <a href="/">Home</a>
       <xsl:if test="/formresult/pager/@offset &gt; 0">
         &#xbb;

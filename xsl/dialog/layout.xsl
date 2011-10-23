@@ -76,20 +76,20 @@
       <body onKeyUp="handleKey(event)">
         <!-- main content -->
         <div id="screen">
-          <div id="header">
+          <header>
             <xsl:call-template name="gutter"/>
             <ul>
               <li><a id="active" href="{func:linkPage(0)}">Home</a></li>
               <li><a href="{func:link('bydate')}">By Date</a></li>
               <li><a href="{func:link('bytopic')}">By Topic</a></li>
             </ul>
-          </div>
+          </header>
           <div class="content">
             <xsl:call-template name="content"/>
           </div>
           
           <!-- footer -->
-          <div id="footer">
+          <footer>
             <span>&#169; <xsl:value-of select="/formresult/config/copyright"/></span>
             <ul>
               <xsl:for-each select="/formresult/links/link">
@@ -100,7 +100,7 @@
                 </li>
               </xsl:for-each>
             </ul>
-          </div>
+          </footer>
         </div>
       </body>
     </html>
