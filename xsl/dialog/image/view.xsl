@@ -184,6 +184,16 @@
         </xsl:if>
         </small>)
       </p>
+      <div id="fb-container">
+        <div class="fb-like" data-send="false" data-width="250" data-show-faces="true" data-colorscheme="dark" data-font="segoe ui"></div>
+        <div class="fb-comments" data-href="{func:linkImage(
+          /formresult/album/@name,
+          /formresult/selected/@chapter,
+          /formresult/selected/@type,
+          /formresult/selected/@number
+        )}" data-num-posts="5" data-width="500" data-colorscheme="dark"></div>
+        <div class="endsection"></div>
+      </div>
     </section>
   </xsl:template>
   
