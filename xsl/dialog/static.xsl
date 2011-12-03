@@ -107,15 +107,17 @@
    ! @purpose  Specialized entry template
    !-->
   <xsl:template match="entry[@type = 'de.thekid.dialog.SingleShot']">
-    <section>
-      <xsl:call-template name="entry-date"/>
+    <section class="teaser singleshot">
       <h1>
         Featured image: <xsl:value-of select="@title"/>
       </h1>
-      <p>
+      <xsl:call-template name="entry-date">
+        <xsl:with-param name="date" select="date"/>
+      </xsl:call-template>
+      <p class="description main-description">
         <xsl:apply-templates select="description"/>
       </p>
-      <div>
+      <div class="highlightspane">
         <div class="display" style="background-image: url(/shots/detail.{@filename}); width: 619px; height: 347px">
           <div class="opaqueborder"/>
         </div>

@@ -101,6 +101,7 @@
           </header>
           <div class="content">
             <xsl:call-template name="content"/>
+            <div class="push"/>
           </div>
           
           <!-- footer -->
