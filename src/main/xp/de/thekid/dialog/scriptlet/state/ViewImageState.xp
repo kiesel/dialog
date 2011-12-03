@@ -89,6 +89,7 @@ public class ViewImageState extends de.thekid.dialog.scriptlet.AbstractDialogSta
 
       $selected.setAttribute('type', $type);
       $selected.setAttribute('chapter', $chapter);
+      $selected.setAttribute('number', $id);
       $next && $selected.addChild(Node::fromArray($next, 'next'));
       $prev && $selected.addChild(Node::fromArray($prev, 'prev'));
 
