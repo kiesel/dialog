@@ -153,13 +153,13 @@
    !-->
   <xsl:template name="pager">
     <nav class="pager">
-      <a title="Newer entries" class="pager previous pager{/formresult/pager/@offset &gt; 0}">
+      <a id="previous" title="Newer entries" class="pager previous pager{/formresult/pager/@offset &gt; 0}">
         <xsl:if test="/formresult/pager/@offset &gt; 0">
           <xsl:attribute name="href"><xsl:value-of select="func:linkPage(/formresult/pager/@offset - 1)"/></xsl:attribute>
         </xsl:if>
         &#8592; previous
       </a>
-      <a title="Older entries" class="pager next pager{(/formresult/pager/@offset + 1) * /formresult/pager/@perpage &lt; /formresult/pager/@total}">
+      <a id="next" title="Older entries" class="pager next pager{(/formresult/pager/@offset + 1) * /formresult/pager/@perpage &lt; /formresult/pager/@total}">
         <xsl:if test="(/formresult/pager/@offset + 1) * /formresult/pager/@perpage &lt; /formresult/pager/@total">
           <xsl:attribute name="href"><xsl:value-of select="func:linkPage(/formresult/pager/@offset + 1)"/></xsl:attribute>
         </xsl:if>

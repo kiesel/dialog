@@ -98,25 +98,39 @@
    ! @purpose  Define main content
    !-->
   <xsl:template name="content">
-    <xsl:call-template name="pager">
-      <xsl:with-param name="link-prev" select="func:linkImage(
+    <div id="fb-root"></div>
+    <script>(function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) {return;}
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script>
+
+    <nav class="pager">
+      <a id="previous" class="pager previous pager{/formresult/selected/prev != ''}" href="{func:linkImage(
         /formresult/album/@name,
         /formresult/selected/prev/chapter,
         /formresult/selected/prev/type,
         /formresult/selected/prev/number
-      )"/>
-      <xsl:with-param name="link-next" select="func:linkImage(
-        /formresult/album/@name,
-        /formresult/selected/next/chapter,
-        /formresult/selected/next/type,
-        /formresult/selected/next/number
-      )"/>
-    </xsl:call-template>
+      )}">
+        &#8592; previous
+      </a>
+      <xsl:if test="/formresult/selected/next != ''">
+        <a id="next" class="pager next pager1" href="{func:linkImage(
+          /formresult/album/@name,
+          /formresult/selected/next/chapter,
+          /formresult/selected/next/type,
+          /formresult/selected/next/number
+        )}">
+          next &#8594;
+        </a>
+      </xsl:if>
+    </nav>
 
     <section class="teaser image">
     
       <!-- Selected image -->
-      <div class="image">
         <a>
           <xsl:if test="/formresult/selected/next != ''">
             <xsl:attribute name="href"><xsl:value-of select="func:linkImage(
@@ -126,13 +140,21 @@
               /formresult/selected/next/number
             )"/></xsl:attribute>
           </xsl:if>
-          <img
-           src="/albums/{/formresult/album/@name}/{/formresult/selected/name}"
-           width="{/formresult/selected/width}"
-           height="{/formresult/selected/height}"
-          />
+<!--              <div class="image" style="
+                /* background: url(/albums/{/formresult/album/@name}/{/formresult/selected/name}) center top no-repeat; */
+                width: 100%
+                height: 100%
+                left: 50%;
+              ">-->
+                <img
+                 src="/albums/{/formresult/album/@name}/{/formresult/selected/name}"
+                 class="main-image"
+                 style="
+                  height: {/formresult/selected/height}px
+                  width: {/formresult/selected/width}px
+                "/>
+<!--              </div>-->
         </a>
-      </div>
 
       <p class="description metadata">
         <xsl:variable name="exifData" select="/formresult/selected/exifData"/>
