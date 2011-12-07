@@ -43,6 +43,12 @@
    !-->
   <xsl:template name="page-head">
     <meta property="og:type" content="album" />
+    <xsl:if test="/formresult/config/facebook/appid != ''">
+      <meta property="fb:app_id" content="{/formresult/config/facebook/appid}"/>
+    </xsl:if>
+    <xsl:if test="/formresult/config/facebook/admins != ''">
+      <meta property="fb:admins" content="{/formresult/config/facebook/admins}"/>
+    </xsl:if>
     <xsl:apply-templates select="/formresult/selected" mode="og"/>
   </xsl:template>
 
@@ -185,13 +191,18 @@
         </small>)
       </p>
       <div id="fb-container">
-        <div class="fb-like" data-send="false" data-width="250" data-show-faces="true" data-colorscheme="dark" data-font="segoe ui"></div>
-        <div class="fb-comments" data-href="{func:linkImage(
-          /formresult/album/@name,
-          /formresult/selected/@chapter,
-          /formresult/selected/@type,
-          /formresult/selected/@number
-        )}" data-num-posts="5" data-width="500" data-colorscheme="dark"></div>
+        <xsl:if test="/formresult/config/facebook/enable_like = 'true'">
+          <div class="fb-like" data-send="false" data-width="250" data-show-faces="true" data-colorscheme="dark" data-font="segoe ui"></div>
+        </xsl:if>
+
+        <xsl:if test="/formresult/config/facebook/enable_comments = 'true'">
+          <div class="fb-comments" data-href="{func:linkImage(
+            /formresult/album/@name,
+            /formresult/selected/@chapter,
+            /formresult/selected/@type,
+            /formresult/selected/@number
+          )}" data-num-posts="5" data-width="500" data-colorscheme="dark"></div>
+        </xsl:if>
         <div class="endsection"></div>
       </div>
     </section>
