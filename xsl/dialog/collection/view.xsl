@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <!--
- ! Stylesheet for home page
- !
- ! $Id$
+ ! View a collection
  !-->
 <xsl:stylesheet
  version="1.0"
  xmlns:exsl="http://exslt.org/common"
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
  xmlns:func="http://exslt.org/functions"
+ xmlns:str="http://exslt.org/strings"
  xmlns:php="http://php.net/xsl"
- extension-element-prefixes="func"
- exclude-result-prefixes="exsl func php"
+ extension-element-prefixes="func str"
+ exclude-result-prefixes="exsl func php str"
 >
   <xsl:import href="../layout.xsl"/>
   
@@ -56,17 +55,16 @@
     </p>
 
     <h4>Highlights</h4>
-    <table class="highlights" border="0">
-      <tr>
-        <xsl:for-each select="highlights/highlight">
-          <td>
-            <a href="{func:linkImage(../../@name, 0, 'h', position()- 1)}">
-              <img width="150" height="113" border="0" src="/albums/{../../@name}/thumb.{name}"/>
-            </a>
-          </td>
-        </xsl:for-each>
-      </tr>
-    </table>
+    <div class="highlights">
+      <xsl:for-each select="highlights/highlight">
+        <div style="float: left"> 
+          <a href="{func:linkImage(../../@name, 0, 'h', position()- 1)}">
+            <img width="150" height="113" border="0" src="/albums/{../../@name}/thumb.{str:encode-uri(name, false())}"/>
+          </a>
+        </div>
+      </xsl:for-each>
+      <br clear="all"/>
+    </div>
     <p>
       This album contains <xsl:value-of select="@num_images"/> images in <xsl:value-of select="@num_chapters"/> chapters -
       <a href="{func:linkAlbum(@name)}">See more</a>
@@ -120,18 +118,18 @@
     <table border="0">
       <tr>
         <td rowspan="2">
-          <img class="singleshot" border="0" src="/shots/detail.{@filename}" width="459" height="230"/>
+          <img class="singleshot" border="0" src="/shots/detail.{str:encode-uri(@filename, false())}" width="459" height="230"/>
         </td>
         <td valign="top">
           <a href="{func:linkShot(@name, 0)}">
-            <img class="singleshot_thumb" border="0" src="/shots/thumb.color.{@filename}" width="150" height="113"/>
+            <img class="singleshot_thumb" border="0" src="/shots/thumb.color.{str:encode-uri(@filename, false())}" width="150" height="113"/>
           </a>
         </td>
       </tr>
       <tr>
         <td valign="bottom">
           <a href="{func:linkShot(@name, 1)}">
-            <img class="singleshot_thumb" border="0" src="/shots/thumb.gray.{@filename}" width="150" height="113"/>
+            <img class="singleshot_thumb" border="0" src="/shots/thumb.gray.{str:encode-uri(@filename, false())}" width="150" height="113"/>
           </a>
         </td>
       </tr>
@@ -162,7 +160,7 @@
       <xsl:for-each select="entry[@type='de.thekid.dialog.Album']">
         <tr>
           <td width="160" valign="top">
-            <img width="150" height="113" border="0" src="/albums/{@name}/thumb.{./highlights/highlight[1]/name}"/>
+            <img width="150" height="113" border="0" src="/albums/{@name}/thumb.{str:encode-uri(./highlights/highlight[1]/name, false())}"/>
           </td>
           <td width="466" valign="top">
             <h3>

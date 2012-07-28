@@ -2,15 +2,20 @@ VERSION?=$(shell cat VERSION)
 
 compile: compile-main compile-test
 
+test: compile
+	unittest de.thekid.dialog.unittest.**
+
 compile-main: dist/main
-	xcc -o dist/main -sp src/main/xp src/main/xp
+	xcc -p rad -o dist/main -sp src/main/xp src/main/xp
 
 compile-test: dist/test
-	xcc -o dist/test -sp src/test/xp src/test/xp
+	xcc -p rad -o dist/test -sp src/test/xp src/test/xp
 
 dist:	compile
 	cd dist/main && xar cvf ../dialog-$(VERSION).xar .
-	cd .. && zip -r dialog/dist/dialog-$(VERSION).zip dialog/dist/dialog-$(VERSION).xar dialog/xsl dialog/doc_root dialog/etc dialog/data -x \*.svn\* -x .cvsignore
+	echo dist/dialog-$(VERSION).xar > class.pth
+	cd .. && zip -r dialog/dist/dialog-$(VERSION).zip dialog/dist/dialog-$(VERSION).xar dialog/xsl dialog/doc_root dialog/etc dialog/data dialog/class.pth -x \*.svn\* -x .cvsignore
+	rm class.pth
 
 dist/main:
 	mkdir -p $@

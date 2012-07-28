@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <!--
- ! Stylesheet for home page
- !
- ! $Id$
+ ! View an album
  !-->
 <xsl:stylesheet
  version="1.0"
  xmlns:exsl="http://exslt.org/common"
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
  xmlns:func="http://exslt.org/functions"
+ xmlns:str="http://exslt.org/strings"
  xmlns:php="http://php.net/xsl"
- extension-element-prefixes="func"
- exclude-result-prefixes="exsl func php"
+ extension-element-prefixes="func str"
+ exclude-result-prefixes="exsl func php str"
 >
   <xsl:import href="../layout.xsl"/>
   
@@ -80,21 +79,20 @@
     </p>
     
     <h4>Highlights</h4>
-    <table class="highlights" border="0">
-      <tr>
-        <xsl:for-each select="/formresult/album/highlights/highlight">
-          <td>
-            <a href="{func:linkImage(../../@name, 0, 'h', position()- 1)}">
-              <img width="150" height="113" border="0" src="/albums/{../../@name}/thumb.{name}"/>
-            </a>
-          </td>
-        </xsl:for-each>
-      </tr>
-    </table>
+    <div class="highlights">
+      <xsl:for-each select="/formresult/album/highlights/highlight">
+        <div style="float: left"> 
+          <a href="{func:linkImage(../../@name, 0, 'h', position()- 1)}">
+            <img width="150" height="113" border="0" src="/albums/{../../@name}/thumb.{str:encode-uri(name, false())}"/>
+          </a>
+        </div>
+      </xsl:for-each>
+      <br clear="all"/>
+    </div>
     <p>
       This album contains <xsl:value-of select="/formresult/album/@num_images"/> images in <xsl:value-of select="/formresult/album/@num_chapters"/> chapters.
     </p>
-    <br clear="all"/>
+    <br clear="all"/><hr/>
 
     <xsl:for-each select="/formresult/album/chapters/chapter">
       <xsl:variable name="total" select="count(images/image)"/>
@@ -118,21 +116,17 @@
         </xsl:choose>
       </p>
 
-      <table border="0" class="chapter">
-        <tr>
-          <xsl:for-each select="images/image">
-            <xsl:variable name="pos" select="position()"/>
-            <xsl:if test="($pos &gt; 1) and ($pos mod 5 = 1)"><xsl:text disable-output-escaping="yes">&lt;tr></xsl:text></xsl:if>
-            <td>
-              <a href="{func:linkImage(../../../../@name, $chapter, 'i', position()- 1)}">
-                <img width="150" height="113" border="0" src="/albums/{../../../../@name}/thumb.{name}"/>
-              </a>
-            </td>
-            <xsl:if test="($pos mod 5 = 0) and ($pos != last())"><xsl:text disable-output-escaping="yes">&lt;/tr></xsl:text></xsl:if>
-          </xsl:for-each>
-        </tr>
-      </table>
-      <br/><br clear="all"/>
+      <div class="chapter">
+        <xsl:for-each select="images/image">
+          <div style="float: left"> 
+            <a href="{func:linkImage(../../../../@name, $chapter, 'i', position()- 1)}">
+              <img width="150" height="113" border="0" src="/albums/{../../../../@name}/thumb.{str:encode-uri(name, false())}"/>
+            </a>
+          </div>
+        </xsl:for-each>
+        <br clear="all"/>
+      </div>
+      <hr/>
     </xsl:for-each>
   </xsl:template>
   

@@ -200,12 +200,11 @@ public class AddCollection extends ImportCommand {
       $collection.setDescription(file_get_contents($df));
     }
 
-    // If not specified: Read the title from title.txt if existant, use the 
-    // directory name otherwise
+    // When no title is passed in, either use an existing one, or read the title 
+    // from title.txt if existant, failling back to the directory name otherwise
     if (null !== $this.title) {
       $collection.setTitle($this.title);
-    } else {
-
+    } else if (!$collection.getTitle()) {
       if (is_file($tf= $this.origin.getURI() ~ 'title.txt')) {
         $collection.setTitle(file_get_contents($tf));
       } else {
@@ -263,7 +262,7 @@ public class AddCollection extends ImportCommand {
           $album.addHighlight($highlight);
           $this.out.writeLine('     >> Added highlight ', $highlight.getName(), ' to album ', $albumName);
         }
-        $needsHighlights= self::HIGHLIGHTS_MAX - $album.numHighlights();
+        $needsHighlights= $this.HIGHLIGHTS_MAX - $album.numHighlights();
       }
 
       // Process all images
@@ -289,7 +288,7 @@ public class AddCollection extends ImportCommand {
       // Sort images by their creation date (from EXIF data)
       usort($images, create_function(
         '$a, $b', 
-        'return $b.exifData.dateTime.compareTo($a.exifData.dateTime);'
+        'return $b->exifData->dateTime->compareTo($a->exifData->dateTime);'
       ));
 
       // Group images by strategy
@@ -315,7 +314,7 @@ public class AddCollection extends ImportCommand {
     // Sort entries inside collection by creation date
     usort($collection.entries, create_function(
       '$a, $b', 
-      'return $b.getDate().compareTo($a.getDate());'
+      'return $b->getDate()->compareTo($a->getDate());'
     ));
 
     // If not specified: Use first album' creation time as collections's

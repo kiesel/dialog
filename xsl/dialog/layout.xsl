@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <!--
  ! Layout stylesheet
- !
- ! $Id$
  !-->
 <xsl:stylesheet
  version="1.0"
  xmlns:exsl="http://exslt.org/common"
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
  xmlns:func="http://exslt.org/functions"
+ xmlns:str="http://exslt.org/strings"
  xmlns:php="http://php.net/xsl"
- extension-element-prefixes="func"
- exclude-result-prefixes="exsl func php"
+ extension-element-prefixes="func str"
+ exclude-result-prefixes="exsl func php str"
 >
   <xsl:include href="../master.xsl"/>
   <xsl:include href="links.inc.xsl"/>
@@ -81,10 +80,12 @@
               <td width="690" class="gutter" id="menu">
                 <a id="active" href="{func:linkPage(0)}">
                   Home
-                </a><a href="{func:link('bydate')}">
+                </a><a href="{func:linkByDate()}">
                   By Date
-                </a><a href="{func:link('bytopic')}">
+                </a><a href="{func:linkByTopic()}">
                   By Topic
+                </a><a id="rss" href="/rss">
+                  RSS
                 </a>
               </td>
             </tr>

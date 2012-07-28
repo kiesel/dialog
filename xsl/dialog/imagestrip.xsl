@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <!--
- ! Stylesheet for image strips
- !
- ! $Id$
+ ! View an image strips
  !-->
 <xsl:stylesheet
  version="1.0"
  xmlns:exsl="http://exslt.org/common"
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
  xmlns:func="http://exslt.org/functions"
+ xmlns:str="http://exslt.org/strings"
  xmlns:php="http://php.net/xsl"
- extension-element-prefixes="func"
- exclude-result-prefixes="exsl func php"
+ extension-element-prefixes="func str"
+ exclude-result-prefixes="exsl func php str"
 >
   <xsl:import href="layout.xsl"/>
   
@@ -74,50 +73,42 @@
     
     <!-- Images -->
     <br clear="all"/>
-    <table border="0" width="800">
+    <div class="image">
       <xsl:for-each select="/formresult/imagestrip/images/image">
-        <tr>
-          <td class="image" align="center">
-            <a name="{position() - 1}">
-              <div class="display" style="background-image: url(/albums/{/formresult/imagestrip/@name}/{name}); width: {width}px; height: {height}px">
-                <div class="opaqueborder"/>
-              </div>
-            </a>
-          </td>
-        </tr>
-        <tr>
-          <td class="exif">
-            <p>
-              Originally taken on <xsl:value-of select="php:function('XSLCallback::invoke', 'xp.date', 'format', string(exifData/dateTime/value), 'D, d M H:i')"/>
-              with <xsl:value-of select="exifData/make"/>'s
-              <xsl:value-of select="exifData/model"/>.
+        <a name="{position() - 1}">
+          <div class="display" style="background-image: url(/albums/{/formresult/imagestrip/@name}/{str:encode-uri(name, false())}); width: {width}px; height: {height}px">
+            <div class="opaqueborder"/>
+          </div>
+        </a>
+        <p>
+          Originally taken on <xsl:value-of select="php:function('XSLCallback::invoke', 'xp.date', 'format', string(exifData/dateTime/value), 'D, d M H:i')"/>
+          with <xsl:value-of select="exifData/make"/>'s
+          <xsl:value-of select="exifData/model"/>.
 
-              (<small>
-              <xsl:if test="exifData/apertureFNumber != ''">
-                <xsl:value-of select="exifData/apertureFNumber"/>
-              </xsl:if>
-              <xsl:if test="exifData/exposureTime != ''">
-                <xsl:text>, </xsl:text>
-                <xsl:value-of select="exifData/exposureTime"/> sec.
-              </xsl:if>  
-              <xsl:if test="exifData/isoSpeedRatings != ''">
-                <xsl:text>, ISO </xsl:text>
-                <xsl:value-of select="exifData/isoSpeedRatings"/>
-              </xsl:if>  
-              <xsl:if test="exifData/focalLength != '0'">
-                <xsl:text>, focal length: </xsl:text>
-                <xsl:value-of select="exifData/focalLength"/>
-                <xsl:text> mm</xsl:text>
-              </xsl:if>
-              <xsl:if test="(exifData/flash mod 8) = 1">
-                <xsl:text>, flash fired</xsl:text>
-              </xsl:if>
-              </small>)
-            </p>
-          </td>
-        </tr>
+          (<small>
+          <xsl:if test="exifData/apertureFNumber != ''">
+            <xsl:value-of select="exifData/apertureFNumber"/>
+          </xsl:if>
+          <xsl:if test="exifData/exposureTime != ''">
+            <xsl:text>, </xsl:text>
+            <xsl:value-of select="exifData/exposureTime"/> sec.
+          </xsl:if>  
+          <xsl:if test="exifData/isoSpeedRatings != ''">
+            <xsl:text>, ISO </xsl:text>
+            <xsl:value-of select="exifData/isoSpeedRatings"/>
+          </xsl:if>  
+          <xsl:if test="exifData/focalLength != '0'">
+            <xsl:text>, focal length: </xsl:text>
+            <xsl:value-of select="exifData/focalLength"/>
+            <xsl:text> mm</xsl:text>
+          </xsl:if>
+          <xsl:if test="(exifData/flash mod 8) = 1">
+            <xsl:text>, flash fired</xsl:text>
+          </xsl:if>
+          </small>)
+        </p>
       </xsl:for-each>
-    </table>
+    </div>
   </xsl:template>
   
 </xsl:stylesheet>

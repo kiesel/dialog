@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <!--
- ! Stylesheet for home page
- !
- ! $Id$
+ ! Home and browse page
  !-->
 <xsl:stylesheet
  version="1.0"
  xmlns:exsl="http://exslt.org/common"
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
  xmlns:func="http://exslt.org/functions"
+ xmlns:str="http://exslt.org/strings"
  xmlns:php="http://php.net/xsl"
- extension-element-prefixes="func"
- exclude-result-prefixes="exsl func php"
+ extension-element-prefixes="func str"
+ exclude-result-prefixes="exsl func php str"
 >
   <xsl:import href="layout.xsl"/>
   
@@ -54,13 +53,13 @@
         <xsl:if test="/formresult/pager/@offset &gt; 0">
           <xsl:attribute name="href"><xsl:value-of select="func:linkPage(/formresult/pager/@offset - 1)"/></xsl:attribute>
         </xsl:if>
-        <img alt="&#xab;" src="/image/prev.gif" border="0" width="19" height="15"/>
+        <xsl:text>&#xab;</xsl:text>
       </a>
       <a title="Older entries" class="pager{(/formresult/pager/@offset + 1) * /formresult/pager/@perpage &lt; /formresult/pager/@total}" id="next">
         <xsl:if test="(/formresult/pager/@offset + 1) * /formresult/pager/@perpage &lt; /formresult/pager/@total">
           <xsl:attribute name="href"><xsl:value-of select="func:linkPage(/formresult/pager/@offset + 1)"/></xsl:attribute>
         </xsl:if>
-        <img alt="&#xbb;" src="/image/next.gif" border="0" width="19" height="15"/>
+        <xsl:text>&#xbb;</xsl:text>
       </a>
     </center>
   </xsl:template>
@@ -86,22 +85,21 @@
     </p>
 
     <h4>Highlights</h4>
-    <table class="highlights" border="0">
-      <tr>
-        <xsl:for-each select="highlights/highlight">
-          <td>
-            <a href="{func:linkImage(../../@name, 0, 'h', position()- 1)}">
-              <img width="150" height="113" border="0" src="/albums/{../../@name}/thumb.{name}"/>
-            </a>
-          </td>
-        </xsl:for-each>
-      </tr>
-    </table>
+    <div class="highlights">
+      <xsl:for-each select="highlights/highlight">
+        <div style="float: left">
+          <a href="{func:linkImage(../../@name, 0, 'h', position()- 1)}">
+            <img width="150" height="113" border="0" src="/albums/{../../@name}/thumb.{str:encode-uri(name, false())}"/>
+          </a>
+        </div>
+      </xsl:for-each>
+      <br clear="all"/>
+    </div>
     <p>
       This album contains <xsl:value-of select="@num_images"/> images in <xsl:value-of select="@num_chapters"/> chapters -
       <a href="{func:linkAlbum(@name)}">See more</a>
     </p>
-    <br/><br clear="all"/>
+    <br clear="all"/><hr/>
   </xsl:template>
 
   <!--
@@ -122,7 +120,7 @@
       - <a href="{func:linkAlbum(@album)}">Go to album</a>
       <br clear="all"/>
     </p>
-    <br/><br clear="all"/>
+    <br clear="all"/><hr/>
   </xsl:template>
 
   <!--
@@ -145,20 +143,20 @@
     <table border="0">
       <tr>
         <td class="image" rowspan="3">
-          <div class="display" style="background-image: url(/shots/detail.{@filename}); width: 619px; height: 347px">
+          <div class="display" style="background-image: url(/shots/detail.{str:encode-uri(@filename, false())}); width: 619px; height: 347px">
             <div class="opaqueborder"/>
           </div>
         </td>
         <td valign="top">
           <a href="{func:linkShot(@name, 0)}">
-            <img class="singleshot_thumb" border="0" src="/shots/thumb.color.{@filename}" width="150" height="113"/>
+            <img class="singleshot_thumb" border="0" src="/shots/thumb.color.{str:encode-uri(@filename, false())}" width="150" height="113"/>
           </a>
         </td>
       </tr>
       <tr>
         <td valign="top">
           <a href="{func:linkShot(@name, 1)}">
-            <img class="singleshot_thumb" border="0" src="/shots/thumb.gray.{@filename}" width="150" height="113"/>
+            <img class="singleshot_thumb" border="0" src="/shots/thumb.gray.{str:encode-uri(@filename, false())}" width="150" height="113"/>
           </a>
         </td>
       </tr>
@@ -168,33 +166,8 @@
         </td>
       </tr>
     </table>
-    <br/><br clear="all"/>
+    <br clear="all"/><hr/>
   </xsl:template>
-
-  <!--
-   ! Function that draws the image strip images, max. 5 in a row
-   !
-   !-->
-  <func:function name="func:stripimages">
-    <xsl:param name="entries"/>
-    <xsl:param name="i" select="1"/>
-    <xsl:param name="max" select="5"/>
-    
-    <func:result>
-      <tr>
-        <xsl:for-each select="exsl:node-set($entries)[position() &gt;= $i and position() &lt; $i + $max]">
-          <td>
-            <a href="{func:linkImageStrip(../../@name)}#{$i - 1 + position() - 1}">
-              <img width="150" height="113" border="0" src="/albums/{../../@name}/thumb.{name}"/>
-            </a>
-          </td>
-        </xsl:for-each>
-      </tr>
-      <xsl:if test="$i &lt; count(exsl:node-set($entries))">
-        <xsl:copy-of select="func:stripimages(exsl:node-set($entries), $i + $max)"/>
-      </xsl:if>
-    </func:result>  
-  </func:function>
 
   <!--
    ! Template for image strips
@@ -217,16 +190,21 @@
     </p>
 
     <h4>Images</h4>
-    <table class="highlights" border="0">
-      <tr>
-        <xsl:copy-of select="func:stripimages(exsl:node-set(images/image))"/>
-      </tr>
-    </table>
+    <div class="highlights">
+      <xsl:for-each select="images/image">
+        <div style="float: left"> 
+          <a href="{func:linkImageStrip(../../@name)}#{position() - 1}">
+            <img width="150" height="113" border="0" src="/albums/{../../@name}/thumb.{str:encode-uri(name, false())}"/>
+          </a>
+        </div>
+      </xsl:for-each>
+      <br clear="all"/>
+    </div>
     <p>
       This image strip contains <xsl:value-of select="@num_images"/> images -
       <a href="{func:linkImageStrip(@name)}">See more</a>
     </p>
-    <br/><br clear="all"/>
+    <br clear="all"/><hr/>
   </xsl:template>
 
   <!--
@@ -255,7 +233,7 @@
         <tr>
           <td width="160" valign="top">
             <a href="{func:linkAlbum(@name)}">
-              <img width="150" height="113" border="0" src="/albums/{@name}/thumb.{./highlights/highlight[1]/name}"/>
+              <img width="150" height="113" border="0" src="/albums/{@name}/thumb.{str:encode-uri(./highlights/highlight[1]/name, false())}"/>
             </a>
           </td>
           <td width="600" valign="top">
@@ -274,8 +252,7 @@
         </tr>
       </xsl:for-each>
     </table>
-      
-    <br/><br clear="all"/>
+    <br clear="all"/><hr/>
   </xsl:template>
 
   <!--

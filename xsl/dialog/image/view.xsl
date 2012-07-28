@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <!--
- ! Stylesheet for home page
- !
- ! $Id$
+ ! View an image
  !-->
 <xsl:stylesheet
  version="1.0"
  xmlns:exsl="http://exslt.org/common"
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
  xmlns:func="http://exslt.org/functions"
+ xmlns:str="http://exslt.org/strings"
  xmlns:php="http://php.net/xsl"
- extension-element-prefixes="func"
- exclude-result-prefixes="exsl func php"
+ extension-element-prefixes="func str"
+ exclude-result-prefixes="exsl func php str"
 >
   <xsl:import href="../layout.xsl"/>
   
@@ -102,7 +101,7 @@
             /formresult/selected/prev/number
           )"/></xsl:attribute>
         </xsl:if>
-        <img alt="&#xab;" src="/image/prev.gif" border="0" width="19" height="15"/>
+        <xsl:text>&#xab;</xsl:text>
       </a>
       <a title="Next image" class="pager{/formresult/selected/next != ''}" id="next">
         <xsl:if test="/formresult/selected/next != ''">
@@ -113,30 +112,26 @@
             /formresult/selected/next/number
           )"/></xsl:attribute>
         </xsl:if>
-        <img alt="&#xbb;" src="/image/next.gif" border="0" width="19" height="15"/>
+        <xsl:text>&#xbb;</xsl:text>
       </a>
     </center>
     
     <!-- Selected image -->
-    <table border="0" width="800">
-      <tr>
-        <td class="image" align="center">
-          <a>
-            <xsl:if test="/formresult/selected/next != ''">
-              <xsl:attribute name="href"><xsl:value-of select="func:linkImage(
-                /formresult/album/@name,
-                /formresult/selected/next/chapter,
-                /formresult/selected/next/type,
-                /formresult/selected/next/number
-              )"/></xsl:attribute>
-            </xsl:if>
-            <div class="display" style="background-image: url(/albums/{/formresult/album/@name}/{/formresult/selected/name}); width: {/formresult/selected/width}px; height: {/formresult/selected/height}px">
-              <div class="opaqueborder"/>
-            </div>
-          </a>
-        </td>
-      </tr>
-    </table>
+    <div class="image">
+      <a>
+        <xsl:if test="/formresult/selected/next != ''">
+          <xsl:attribute name="href"><xsl:value-of select="func:linkImage(
+            /formresult/album/@name,
+            /formresult/selected/next/chapter,
+            /formresult/selected/next/type,
+            /formresult/selected/next/number
+          )"/></xsl:attribute>
+        </xsl:if>
+        <div class="display" style="background-image: url(/albums/{/formresult/album/@name}/{str:encode-uri(/formresult/selected/name, false())}); width: {/formresult/selected/width}px; height: {/formresult/selected/height}px">
+          <div class="opaqueborder"/>
+        </div>
+      </a>
+    </div>
     
     <p>
       Originally taken on <xsl:value-of select="php:function('XSLCallback::invoke', 'xp.date', 'format', string(/formresult/selected/exifData/dateTime/value), 'D, d M H:i')"/>
@@ -165,6 +160,16 @@
       </xsl:if>
       </small>)
     </p>
+    <hr/>
+    <xsl:if test="count(/formresult/selected/topics/topic) &gt; 0">
+      <p>
+        <xsl:text>Topics: </xsl:text>
+        <xsl:for-each select="/formresult/selected/topics/topic">
+          <a href="{func:linkTopic(@name)}"><xsl:value-of select="."/></a>
+          <xsl:text> </xsl:text>
+        </xsl:for-each>
+      </p>
+    </xsl:if>
   </xsl:template>
   
 </xsl:stylesheet>

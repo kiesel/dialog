@@ -152,8 +152,7 @@ public class AddImageStrip extends ImportCommand {
     // directory name otherwise
     if (null !== $this.title) {
       $imageStrip.setTitle($this.title);
-    } else {
-
+    } else if (!$imageStrip.getTitle()) {
       if (is_file($tf= $this.origin.getURI() ~ 'title.txt')) {
         $imageStrip.setTitle(file_get_contents($tf));
       } else {
@@ -186,7 +185,7 @@ public class AddImageStrip extends ImportCommand {
     // Sort images by their creation date (from EXIF data)
     usort($images, create_function(
       '$a, $b', 
-      'return $b.exifData.dateTime.compareTo($a.exifData.dateTime);'
+      'return $b->exifData->dateTime->compareTo($a->exifData->dateTime);'
     ));
 
     // Add images
