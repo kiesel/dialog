@@ -1,0 +1,86 @@
+package de.thekid.dialog.cmd;
+
+import util.cmd.Command;
+import io.File;
+import io.FileUtil;
+import de.thekid.dialog.IEntry;
+import de.thekid.dialog.Album;
+import de.thekid.dialog.EntryCollection;
+import de.thekid.dialog.SingleShot;
+import de.thekid.dialog.ImageStrip;
+
+import native standard.unserialize;
+import native standard.sprintf;
+
+public class ConvertSqlite extends Command {
+  private string $dataLocation;
+
+  [@arg(name= 'data')]
+  public void setDataLocation(string $data= 'data/') {
+    $this.dataLocation= $data;
+  }
+
+  public void run() {
+    $this.out.writeLine('===> Converting dialog installation to sqlite ...');
+
+    $i= 0;
+    while (true) {
+      $this.out.writeLine('---> Importing page ' ~ $i);
+
+      $page= $this.getPage($i++);
+      $this.importPage($page);
+    }
+  }
+
+  private var getPage(int $i) {
+    return unserialize(FileUtil::getContents(new File($this.dataLocation ~ 'page_' ~ $i ~ '.idx')));
+  }
+
+  private void importPage(var $page) {
+    $this.out.writeLine(xp::stringOf($page));
+
+    foreach ($name in $page['entries'] as string[]?) {
+      $entry= $this.getEntryFor($name);
+
+      $this.importEntry($entry);
+    }
+  }
+
+
+  /**
+   * Returns entry for a specified name
+   *
+   */
+  public IEntry getEntryFor(string? $name) {
+    return $this._getEntryFor($name, IEntry::class);
+  }
+
+  /**
+   * Helper method
+   *
+   * @param   name
+   * @param   expect expected type
+   * @throws  IllegalArgumentException if found entry is not of expected type
+   */
+  protected inline IEntry _getEntryFor(string? $name, XPClass? $expect) throws IllegalArgumentException {
+    $entry= unserialize(FileUtil::getContents(new File($this.dataLocation ~ $name ~ '.dat')));
+
+    // Check expectancy
+    if (!$expect.isInstance($entry)) throw new IllegalArgumentException(sprintf(
+      'Entry of type %s found, %s expected',
+      xp::typeOf($entry),
+      $expect.getName() 
+    ));
+
+    return $entry;
+  }
+
+  private void importEntry(IEntry $entry) {
+    $this.out.writeLine('---> Importing entry ' ~ $entry.getName());
+  }
+
+  private void importEntry(Album $album) {
+    $this.out.writeLine('---> Importing album ' ~ $album.getName()); 
+  }
+
+}
