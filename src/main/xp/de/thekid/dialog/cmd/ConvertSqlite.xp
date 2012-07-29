@@ -10,12 +10,14 @@ import de.thekid.dialog.AlbumImage;
 import de.thekid.dialog.EntryCollection;
 import de.thekid.dialog.SingleShot;
 import de.thekid.dialog.ImageStrip;
+import rdbms.sqlite3.SQLite3Connection;
 
 import native standard.unserialize;
 import native standard.sprintf;
 
 public class ConvertSqlite extends Command {
   private string $dataLocation;
+  private SQLite3Connection $conn;
 
   [@arg(name= 'data')]
   public void setDataLocation(string $data= 'data/') {
@@ -24,6 +26,9 @@ public class ConvertSqlite extends Command {
 
   public void run() {
     $this.out.writeLine('===> Converting dialog installation to sqlite ...');
+    $this.conn= new SQLite3Connection(new rdbms.DSN('sqlite3://./' ~ $this.dataLocation ~ 'dialog.sqlite3?autoconnect=1'));
+    $this.conn.connect();
+    $this.createSchema();
 
     $i= 0;
     while (true) {
@@ -36,6 +41,59 @@ public class ConvertSqlite extends Command {
       $this.out.writeLine('---> Importing page ' ~ $i);
       $this.importPage($page);
     }
+  }
+
+  private void createSchema() {
+    $this.conn.query('create table indextype (
+      type_id integer primary key,
+      desc text
+    )');
+    $this.conn.query('create table masterindex (
+        index_id integer primary key autoincrement,
+        type_id integer not null,
+
+        foreign key (type_id) references indextype(type_id)
+    )');
+
+    $this.conn.query('create table album (
+      album_id integer primary key,
+      name text,
+      title text,
+      description text,
+      created_at integer
+    )');
+
+    $this.conn.query('create table album_chapter (
+      chapter_id integer primary key autoincrement,
+      album_id integer,
+      name text not null,
+
+      foreign key (album_id) references album(album_id)
+    )');
+    $this.conn.query('create index i1 on album_chapter(album_id)');
+
+    $this.conn.query('create table album_image (
+      image_id integer primary key autoincrement,
+      chapter_id integer,
+      highlight integer,
+      name text not null,
+      width integer,
+      height integer,
+
+      foreign key (chapter_id) references album_chapter(chapter_id)
+    )');
+    $this.conn.query('create index i2 on album_image(chapter_id)');
+    $this.conn.query('create index i3 on album_image(highlight)');
+
+    $this.conn.query('create table singleshot (
+      singleshot_id integer primary key,
+      name text,
+      filename text,
+      title text,
+      description text,
+      created_at integer,
+      image_id integer,
+    )');
   }
 
   private var getPage(int $i) {
