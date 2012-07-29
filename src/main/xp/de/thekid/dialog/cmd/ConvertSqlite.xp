@@ -5,6 +5,8 @@ import io.File;
 import io.FileUtil;
 import de.thekid.dialog.IEntry;
 import de.thekid.dialog.Album;
+import de.thekid.dialog.AlbumChapter;
+import de.thekid.dialog.AlbumImage;
 import de.thekid.dialog.EntryCollection;
 import de.thekid.dialog.SingleShot;
 import de.thekid.dialog.ImageStrip;
@@ -25,9 +27,13 @@ public class ConvertSqlite extends Command {
 
     $i= 0;
     while (true) {
-      $this.out.writeLine('---> Importing page ' ~ $i);
+      try {
+        $page= $this.getPage($i++);
+      } catch (io.IOException $e) {
+        break;
+      }
 
-      $page= $this.getPage($i++);
+      $this.out.writeLine('---> Importing page ' ~ $i);
       $this.importPage($page);
     }
   }
@@ -37,13 +43,42 @@ public class ConvertSqlite extends Command {
   }
 
   private void importPage(var $page) {
-    $this.out.writeLine(xp::stringOf($page));
-
     foreach ($name in $page['entries'] as string[]?) {
       $entry= $this.getEntryFor($name);
 
-      $this.importEntry($entry);
+      try {
+        $method= $this.getClass().getMethod(sprintf('import%s', $entry.getClass().getSimpleName()));
+      } catch (lang.ElementNotFoundException $e) {
+        $this.err.writeLine('!--> Skipping import of type ' ~ $entry.getClassName());
+        continue;
+      }
+
+      $method.invoke($this, [$entry]);
     }
+
+    $this.out.writeLine();
+  }
+
+  public void importAlbum(Album $album) {
+    $this.out.writeLine('---> Importing album ' ~ $album.getTitle() ~ ' (' ~ $album.getName() ~ ')');
+
+    foreach ($chapter in $album.chapters as AlbumChapter[]) {
+      $this.importAlbumChapter($album, $chapter);
+    }
+
+
+  }
+
+  public void importAlbumChapter(Album $album, AlbumChapter $chapter) {
+    $this.out.writeLine(' --> Processing chapter ' ~ $chapter.getName());
+
+    foreach ($image in $chapter.images as AlbumImage[]) {
+      $this.importAlbumImage($image);
+    }
+  }
+
+  public void importAlbumImage(AlbumImage $image) {
+    $this.out.writeLine('  -> Processing image ' ~ $image.getName());
   }
 
 
@@ -74,13 +109,4 @@ public class ConvertSqlite extends Command {
 
     return $entry;
   }
-
-  private void importEntry(IEntry $entry) {
-    $this.out.writeLine('---> Importing entry ' ~ $entry.getName());
-  }
-
-  private void importEntry(Album $album) {
-    $this.out.writeLine('---> Importing album ' ~ $album.getName()); 
-  }
-
 }
