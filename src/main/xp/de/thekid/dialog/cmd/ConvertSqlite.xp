@@ -134,6 +134,7 @@ public class ConvertSqlite extends Command {
   }
 
   public void importAlbum(Album $album) {
+    return;
     $this.out.writeLine('---> Importing album ' ~ $album.getTitle() ~ ' (' ~ $album.getName() ~ ')');
     $this.repo.createAlbum($album);
 
@@ -154,7 +155,12 @@ public class ConvertSqlite extends Command {
   }
 
   public void importSingleShot(SingleShot $singleshot) {
-    
+    $this.out.writeLine('---> Importing singleshot ' ~ $singleshot.getName());
+    $this.repo.createSingleShot($singleshot);
+  }
+
+  public void importEntryCollection(EntryCollection $collection) {
+    $this.out.writeLine('---> Importing collection ' ~ $collection.getName());
   }
 
   /**

@@ -21,7 +21,7 @@ public class DialogRepository {
   }
 
   public void createAlbum(Album $album) {
-    $album.setId($this.createOnIndex(self::$TYPE_ALBUM);
+    $album.setId($this.createOnIndex(self::$TYPE_ALBUM));
     $this.conn.insert('into album (
       album_id,
       name,
@@ -81,10 +81,10 @@ public class DialogRepository {
     $image.setId($this.conn.identity());
   }
 
-  public void createSingleshot(SingleShot $singleshot) {
-    $this.createImage($shot.getAlbumImage());
+  public void createSingleshot(SingleShot $shot) {
+    $this.createImage($shot.getImage());
 
-    $singleshot.setId($this.createOnIndex(self::$TYPE_SINGLESHOT));
+    $shot.setId($this.createOnIndex(self::$TYPE_SINGLESHOT));
     $this.conn.insert('into singleshot (
       singleshot_id,
       name,
@@ -94,13 +94,13 @@ public class DialogRepository {
       created_at,
       image_id
       ) values (%d, %s, %s, %s, %s, %s, %d)',
-      $id,
+      $shot.getId(),
       $shot.getName(),
       $shot.getFilename(),
       $shot.getTitle(),
       $shot.getDescription(),
-      $shot.getCreatedAt(),
-      $shot.getAlbumImage().getId()
+      $shot.getDate(),
+      $shot.getImage().getId()
     );
   }
 }
