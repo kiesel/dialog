@@ -14,6 +14,7 @@ import util.Date;
  * @see      xp://de.thekid.dialog.IEntry
  */
 public class EntryCollection implements IEntry {
+  public int $id              = NULL;
   public string $name         = '';
   public string $title        = '';
   public Date $createdAt      = null;
@@ -26,6 +27,24 @@ public class EntryCollection implements IEntry {
    */
   public __construct(string $name= null) {
     $this.name= $name;
+  }
+
+  /**
+   * Set Id
+   * 
+   * @param   int id
+   */
+  public void setId(int $id) {
+    $this.id= $id;
+  }
+
+  /**
+   * Get id
+   *
+   * @return  int
+   */
+  public int getId() {
+    return $this.id;
   }
 
   /**

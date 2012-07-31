@@ -20,6 +20,8 @@ public class ConvertSqlite extends Command {
   private string $dataLocation;
   private SQLite3Connection $conn;
 
+  private int $progress = 0;
+
   [@arg(name= 'data')]
   public void setDataLocation(string $data= 'data/') {
     $this.dataLocation= $data;
@@ -52,8 +54,10 @@ public class ConvertSqlite extends Command {
     $this.conn.query('create table masterindex (
       index_id integer primary key autoincrement,
       type_id integer not null,
+      parent_id integer null,
 
-      foreign key (type_id) references indextype(type_id)
+      foreign key (type_id) references indextype(type_id),
+      foreign key (parent_id) references masterindex(index_id)
     )');
 
     $this.conn.query('create table album (
@@ -106,8 +110,17 @@ public class ConvertSqlite extends Command {
       foreign key (image_id) references image(image_id)
     )');
 
+    $this.conn.query('create table collection (
+      collection_id integer primary key,
+      name text,
+      title text,
+      description text,
+      created_at integer
+    )');
+
     $this.conn.insert('into indextype values (1, "Album")');
     $this.conn.insert('into indextype values (2, "Singleshot")');
+    $this.conn.insert('into indextype values (3, "Collection")');
 
     $this.repo= new DialogRepository($this.conn);
   }
@@ -118,25 +131,31 @@ public class ConvertSqlite extends Command {
 
   private void importPage(var $page) {
     foreach ($name in $page['entries'] as string[]?) {
-      $entry= $this.getEntryFor($name);
-
-      try {
-        $method= $this.getClass().getMethod(sprintf('import%s', $entry.getClass().getSimpleName()));
-      } catch (lang.ElementNotFoundException $e) {
-        $this.err.writeLine('!--> Skipping import of type ' ~ $entry.getClassName());
-        continue;
-      }
-
-      $method.invoke($this, [$entry]);
+      $this.importEntry($this.getEntryFor($name));
     }
 
     $this.out.writeLine();
   }
 
-  public void importAlbum(Album $album) {
-    return;
-    $this.out.writeLine('---> Importing album ' ~ $album.getTitle() ~ ' (' ~ $album.getName() ~ ')');
-    $this.repo.createAlbum($album);
+  private void importEntry(IEntry $entry, int $parent_id= null) {
+    try {
+      $method= $this.getClass().getMethod(sprintf('import%s', $entry.getClass().getSimpleName()));
+    } catch (lang.ElementNotFoundException $e) {
+      $this.err.writeLine('!--> Skipping import of type ' ~ $entry.getClassName());
+      return;
+    }
+
+    try {
+      $method.invoke($this, [$entry, $parent_id]);
+    } catch (lang.reflect.TargetInvocationException $e) {
+      throw $e.getCause();
+    }
+  }
+
+  public void importAlbum(Album $album, int $parent_id= null) {
+    $this.out.writeLine('---> Importing album ' ~ $album.getTitle());
+    if ($parent_id == null) return;
+    $this.repo.createAlbum($album, $parent_id);
 
     foreach ($chapter in $album.chapters as AlbumChapter[]) {
       $this.importAlbumChapter($album, $chapter);
@@ -149,18 +168,24 @@ public class ConvertSqlite extends Command {
 
     $seq= 0;
     foreach ($image in $chapter.images as AlbumImage[]) {
-      $this.out.writeLine('  -> Processing image ' ~ $image.getName());
+      $this.showProgress();
       $this.repo.createAlbumImage($chapter, $image, $seq++, false);
     }
+    $this.showEndProgress();
   }
 
-  public void importSingleShot(SingleShot $singleshot) {
-    $this.out.writeLine('---> Importing singleshot ' ~ $singleshot.getName());
-    $this.repo.createSingleShot($singleshot);
+  public void importSingleShot(SingleShot $singleshot, int $parent_id= null) {
+    $this.out.writeLine('---> Importing singleshot ' ~ $singleshot.getTitle());
+    $this.repo.createSingleShot($singleshot, $parent_id);
   }
 
-  public void importEntryCollection(EntryCollection $collection) {
-    $this.out.writeLine('---> Importing collection ' ~ $collection.getName());
+  public void importEntryCollection(EntryCollection $collection, int $parent_id= null) {
+    $this.out.writeLine('---> Importing collection ' ~ $collection.getTitle());
+    $this.repo.createCollection($collection, $parent_id);
+
+    foreach ($entry in $collection.entries as IEntry[]) {
+      $this.importEntry($entry, $collection.getId());
+    }
   }
 
   /**
@@ -189,5 +214,27 @@ public class ConvertSqlite extends Command {
     ));
 
     return $entry;
+  }
+
+  private void showProgress() {
+    if ($this.progress == 0) { 
+      $this.out.write('     ');
+    }
+
+    $this.out.write('.');
+
+    $this.progress++;
+
+    if ($this.progress > 80) {
+      $this.out.writeLine();
+      $this.progress= 0;
+    }
+  }
+
+  private void showEndProgress() {
+    if (0 != $this.progress) {
+      $this.out.writeLine();
+    }
+    $this.progress= 0;
   }
 }

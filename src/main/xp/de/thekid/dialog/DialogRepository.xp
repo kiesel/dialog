@@ -8,6 +8,7 @@ import native standard.serialize;
 public class DialogRepository {
   private static int $TYPE_ALBUM      = 1;
   private static int $TYPE_SINGLESHOT = 2;
+  private static int $TYPE_COLLECTION = 3;
 
   private rdbms.DBConnection $conn = NULL;
 
@@ -15,13 +16,13 @@ public class DialogRepository {
     $this.conn= $conn;
   }
 
-  protected void createOnIndex(int $type) {
-    $this.conn.insert('into masterindex (type_id) values (%d)', $type);
+  protected void createOnIndex(int $type, int $parent_id= null) {
+    $this.conn.insert('into masterindex (type_id, parent_id) values (%d, %d)', $type, $parent_id);
     return $this.conn.identity();
   }
 
-  public void createAlbum(Album $album) {
-    $album.setId($this.createOnIndex(self::$TYPE_ALBUM));
+  public void createAlbum(Album $album, int $parent_id= null) {
+    $album.setId($this.createOnIndex(self::$TYPE_ALBUM, $parent_id));
     $this.conn.insert('into album (
       album_id,
       name,
@@ -81,10 +82,10 @@ public class DialogRepository {
     $image.setId($this.conn.identity());
   }
 
-  public void createSingleshot(SingleShot $shot) {
+  public void createSingleshot(SingleShot $shot, int $parent_id= null) {
     $this.createImage($shot.getImage());
 
-    $shot.setId($this.createOnIndex(self::$TYPE_SINGLESHOT));
+    $shot.setId($this.createOnIndex(self::$TYPE_SINGLESHOT, $parent_id));
     $this.conn.insert('into singleshot (
       singleshot_id,
       name,
@@ -101,6 +102,24 @@ public class DialogRepository {
       $shot.getDescription(),
       $shot.getDate(),
       $shot.getImage().getId()
+    );
+  }
+
+  public void createCollection(EntryCollection $collection, int $parent_id= null) {
+    $collection.setId($this.createOnIndex(self::$TYPE_COLLECTION, $parent_id));
+
+    $this.conn.insert('into collection (
+      collection_id,
+      name, 
+      title, 
+      description, 
+      created_at
+      ) values (%d, %s, %s, %s, %s)',
+      $collection.getId(),
+      $collection.getName(),
+      $collection.getTitle(),
+      $collection.getDescription(),
+      $collection.getCreatedAt()
     );
   }
 }
