@@ -18,6 +18,7 @@ import native standard.str_replace;
  * @see      xp://de.thekid.dialog.Album
  */
 public class AlbumImage {
+  public int $id            = NULL;
   public string $name       = '';
   public int $width         = 0;
   public int $height        = 0;
@@ -30,6 +31,24 @@ public class AlbumImage {
    */
   public __construct(string $name) {
     $this.name= $name;
+  }
+
+  /**
+   * Set Id
+   * 
+   * @param   int id
+   */
+  public void setId(int $id) {
+    $this.id= $id;
+  }
+
+  /**
+   * Get id
+   *
+   * @return  int
+   */
+  public int getId() {
+    return $this.id;
   }
 
   /**

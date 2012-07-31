@@ -10,6 +10,7 @@ import de.thekid.dialog.AlbumImage;
 import de.thekid.dialog.EntryCollection;
 import de.thekid.dialog.SingleShot;
 import de.thekid.dialog.ImageStrip;
+import de.thekid.dialog.DialogRepository;
 import rdbms.sqlite3.SQLite3Connection;
 
 import native standard.unserialize;
@@ -49,10 +50,10 @@ public class ConvertSqlite extends Command {
       desc text
     )');
     $this.conn.query('create table masterindex (
-        index_id integer primary key autoincrement,
-        type_id integer not null,
+      index_id integer primary key autoincrement,
+      type_id integer not null,
 
-        foreign key (type_id) references indextype(type_id)
+      foreign key (type_id) references indextype(type_id)
     )');
 
     $this.conn.query('create table album (
@@ -72,18 +73,26 @@ public class ConvertSqlite extends Command {
     )');
     $this.conn.query('create index i1 on album_chapter(album_id)');
 
-    $this.conn.query('create table album_image (
+    $this.conn.query('create table image (
       image_id integer primary key autoincrement,
-      chapter_id integer,
-      highlight integer,
       name text not null,
       width integer,
       height integer,
-
-      foreign key (chapter_id) references album_chapter(chapter_id)
+      exifData text,
+      iptcData text      
     )');
-    $this.conn.query('create index i2 on album_image(chapter_id)');
-    $this.conn.query('create index i3 on album_image(highlight)');
+
+    $this.conn.query('create table chapter_image (
+      chapter_id integer,
+      image_id integer,
+      seq integer,
+      highlight integer,
+
+      foreign key (chapter_id) references album_chapter(chapter_id),
+      foreign key (image_id) references image(image_id)
+    )');
+    $this.conn.query('create index i2 on chapter_image(chapter_id)');
+    $this.conn.query('create index i3 on chapter_image(highlight)');
 
     $this.conn.query('create table singleshot (
       singleshot_id integer primary key,
@@ -93,7 +102,14 @@ public class ConvertSqlite extends Command {
       description text,
       created_at integer,
       image_id integer,
+
+      foreign key (image_id) references image(image_id)
     )');
+
+    $this.conn.insert('into indextype values (1, "Album")');
+    $this.conn.insert('into indextype values (2, "Singleshot")');
+
+    $this.repo= new DialogRepository($this.conn);
   }
 
   private var getPage(int $i) {
@@ -119,26 +135,27 @@ public class ConvertSqlite extends Command {
 
   public void importAlbum(Album $album) {
     $this.out.writeLine('---> Importing album ' ~ $album.getTitle() ~ ' (' ~ $album.getName() ~ ')');
+    $this.repo.createAlbum($album);
 
     foreach ($chapter in $album.chapters as AlbumChapter[]) {
       $this.importAlbumChapter($album, $chapter);
     }
-
-
   }
 
   public void importAlbumChapter(Album $album, AlbumChapter $chapter) {
     $this.out.writeLine(' --> Processing chapter ' ~ $chapter.getName());
+    $this.repo.createChapter($album, $chapter);
 
+    $seq= 0;
     foreach ($image in $chapter.images as AlbumImage[]) {
-      $this.importAlbumImage($image);
+      $this.out.writeLine('  -> Processing image ' ~ $image.getName());
+      $this.repo.createAlbumImage($chapter, $image, $seq++, false);
     }
   }
 
-  public void importAlbumImage(AlbumImage $image) {
-    $this.out.writeLine('  -> Processing image ' ~ $image.getName());
+  public void importSingleShot(SingleShot $singleshot) {
+    
   }
-
 
   /**
    * Returns entry for a specified name

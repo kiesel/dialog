@@ -1,0 +1,106 @@
+package de.thekid.dialog;
+
+import de.thekid.dialog.Album;
+import de.thekid.dialog.AlbumChapter;
+import de.thekid.dialog.AlbumImage;
+import native standard.serialize;
+
+public class DialogRepository {
+  private static int $TYPE_ALBUM      = 1;
+  private static int $TYPE_SINGLESHOT = 2;
+
+  private rdbms.DBConnection $conn = NULL;
+
+  public __construct(rdbms.DBConnection $conn) {
+    $this.conn= $conn;
+  }
+
+  protected void createOnIndex(int $type) {
+    $this.conn.insert('into masterindex (type_id) values (%d)', $type);
+    return $this.conn.identity();
+  }
+
+  public void createAlbum(Album $album) {
+    $album.setId($this.createOnIndex(self::$TYPE_ALBUM);
+    $this.conn.insert('into album (
+      album_id,
+      name,
+      title,
+      description,
+      created_at
+      ) values (%d, %s, %s, %s, %s)',
+      $album.getId(),
+      $album.getName(),
+      $album.getTitle(),
+      $album.getDescription(),
+      $album.getCreatedAt()
+    );
+  }
+
+  public void createChapter(Album $album, AlbumChapter $chapter) {
+    $this.conn.insert('into album_chapter (
+      album_id,
+      name
+      ) values (%d, %s)',
+      $album.getId(),
+      $chapter.getName()
+    );
+    $chapter.setId($this.conn.identity());
+  }
+
+  public void createAlbumImage(AlbumChapter $chapter, AlbumImage $image, int $seq, bool $highlight) {
+    $this.createImage($image);
+
+    $this.conn.insert('into chapter_image (
+      chapter_id,
+      image_id,
+      seq,
+      highlight
+      ) values (%d, %d, %d, %d)',
+      $chapter.getId(),
+      $image.getId(),
+      $seq,
+      $highlight
+    );
+  }
+
+  public void createImage(AlbumImage $image) {
+    $this.conn.insert('into image (
+      name,
+      width,
+      height,
+      exifData,
+      iptcData
+      ) values (%s, %d, %d, %s, %s)',
+      $image.getName(),
+      $image.getWidth(),
+      $image.getHeight(),
+      ($image.getExifData() !== null ? serialize($image.getExifData()) : null),
+      ($image.getIptcData() !== null ? serialize($image.getIptcData()) : null)
+    );
+    $image.setId($this.conn.identity());
+  }
+
+  public void createSingleshot(SingleShot $singleshot) {
+    $this.createImage($shot.getAlbumImage());
+
+    $singleshot.setId($this.createOnIndex(self::$TYPE_SINGLESHOT));
+    $this.conn.insert('into singleshot (
+      singleshot_id,
+      name,
+      filename,
+      title,
+      description,
+      created_at,
+      image_id
+      ) values (%d, %s, %s, %s, %s, %s, %d)',
+      $id,
+      $shot.getName(),
+      $shot.getFilename(),
+      $shot.getTitle(),
+      $shot.getDescription(),
+      $shot.getCreatedAt(),
+      $shot.getAlbumImage().getId()
+    );
+  }
+}
