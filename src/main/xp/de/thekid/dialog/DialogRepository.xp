@@ -3,6 +3,10 @@ package de.thekid.dialog;
 import de.thekid.dialog.Album;
 import de.thekid.dialog.AlbumChapter;
 import de.thekid.dialog.AlbumImage;
+
+import util.Date;
+import webservices.json.JsonDecoder;
+
 import native standard.serialize;
 
 public class DialogRepository {
@@ -11,18 +15,23 @@ public class DialogRepository {
   private static int $TYPE_COLLECTION = 3;
 
   private rdbms.DBConnection $conn = NULL;
+  private JsonDecoder $json = new JsonDecoder();
 
   public __construct(rdbms.DBConnection $conn) {
     $this.conn= $conn;
   }
 
-  protected void createOnIndex(int $type, int $parent_id= null) {
-    $this.conn.insert('into masterindex (type_id, parent_id) values (%d, %d)', $type, $parent_id);
+  public void beginTransaction() {
+    return $this.conn.begin(new rdbms.Transaction($this.getClass().getSimpleName()));
+  }
+
+  protected void createOnIndex(int $type, int $parent_id, string $name, Date $date) {
+    $this.conn.insert('into masterindex (type_id, parent_id, name, created_at) values (%d, %d, %s, %s)', $type, $parent_id, $name, $date);
     return $this.conn.identity();
   }
 
   public void createAlbum(Album $album, int $parent_id= null) {
-    $album.setId($this.createOnIndex(self::$TYPE_ALBUM, $parent_id));
+    $album.setId($this.createOnIndex(self::$TYPE_ALBUM, $parent_id, $album.getName(), $album.getDate()));
     $this.conn.insert('into album (
       album_id,
       name,
@@ -76,8 +85,8 @@ public class DialogRepository {
       $image.getName(),
       $image.getWidth(),
       $image.getHeight(),
-      ($image.getExifData() !== null ? serialize($image.getExifData()) : null),
-      ($image.getIptcData() !== null ? serialize($image.getIptcData()) : null)
+      ($image.getExifData() !== null ? $this.json.encode($image.getExifData()) : null),
+      ($image.getIptcData() !== null ? $this.json.encode($image.getIptcData()) : null)
     );
     $image.setId($this.conn.identity());
   }
@@ -85,7 +94,7 @@ public class DialogRepository {
   public void createSingleshot(SingleShot $shot, int $parent_id= null) {
     $this.createImage($shot.getImage());
 
-    $shot.setId($this.createOnIndex(self::$TYPE_SINGLESHOT, $parent_id));
+    $shot.setId($this.createOnIndex(self::$TYPE_SINGLESHOT, $parent_id, $shot.getName(), $shot.getDate()));
     $this.conn.insert('into singleshot (
       singleshot_id,
       name,
@@ -106,7 +115,7 @@ public class DialogRepository {
   }
 
   public void createCollection(EntryCollection $collection, int $parent_id= null) {
-    $collection.setId($this.createOnIndex(self::$TYPE_COLLECTION, $parent_id));
+    $collection.setId($this.createOnIndex(self::$TYPE_COLLECTION, $parent_id, $collection.getName(), $collection.getDate()));
 
     $this.conn.insert('into collection (
       collection_id,

@@ -55,6 +55,8 @@ public class ConvertSqlite extends Command {
       index_id integer primary key autoincrement,
       type_id integer not null,
       parent_id integer null,
+      name text not null,
+      created_at integer not null,
 
       foreign key (type_id) references indextype(type_id),
       foreign key (parent_id) references masterindex(index_id)
@@ -146,15 +148,26 @@ public class ConvertSqlite extends Command {
     }
 
     try {
+      $transaction= null;
+      if (null === $parent_id) {
+        $transaction= $this.repo.beginTransaction();
+      }
+
       $method.invoke($this, [$entry, $parent_id]);
+
+      if ($transaction instanceof rdbms.Transaction) {
+        $transaction.commit();
+      }
     } catch (lang.reflect.TargetInvocationException $e) {
+      if ($transaction instanceof rdbms.Transaction) {
+        $transaction.rollback();
+      }
       throw $e.getCause();
     }
   }
 
   public void importAlbum(Album $album, int $parent_id= null) {
     $this.out.writeLine('---> Importing album ' ~ $album.getTitle());
-    if ($parent_id == null) return;
     $this.repo.createAlbum($album, $parent_id);
 
     foreach ($chapter in $album.chapters as AlbumChapter[]) {
@@ -163,7 +176,7 @@ public class ConvertSqlite extends Command {
   }
 
   public void importAlbumChapter(Album $album, AlbumChapter $chapter) {
-    $this.out.writeLine(' --> Processing chapter ' ~ $chapter.getName());
+    $this.out.write(' --> Processing chapter ' ~ $chapter.getName());
     $this.repo.createChapter($album, $chapter);
 
     $seq= 0;
