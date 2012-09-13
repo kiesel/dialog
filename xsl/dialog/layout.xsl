@@ -36,6 +36,7 @@
         </title>
         <link rel="stylesheet" href="/{/formresult/config/style}.css"/>
       	<link rel="alternate" type="application/rss+xml" title="RSS - {/formresult/config/title}" href="/rss/"/>
+        <link href="/favicon.ico" rel="icon" type="image/x-icon" />
         <xsl:call-template name="page-head"/>
         <xsl:if test="/formresult/config/analyticscode">
           <script type="text/javascript">
@@ -101,24 +102,24 @@
           </header>
           <div class="content">
             <xsl:call-template name="content"/>
-            <div class="push"/>
           </div>
-          
-          <!-- footer -->
-          <footer>
-            <span>&#169; <xsl:value-of select="/formresult/config/copyright"/></span>
-            <ul>
-              <xsl:for-each select="/formresult/links/link">
-                <li>
-                  <a href="{@href}">
-                    <img border="0" src="/image/{@id}.png" hspace="1" width="80" height="15" alt="{@id}"/>
-                  </a>
-                </li>
-              </xsl:for-each>
-            </ul>
-            <div class="endsection"/>
-          </footer>
+          <div class="push"/>
         </div>
+
+        <!-- footer -->
+        <footer>
+          <span>&#169; <xsl:value-of select="/formresult/config/copyright"/></span>
+          <ul>
+            <xsl:for-each select="/formresult/links/link">
+              <li>
+                <a href="{@href}">
+                  <img border="0" src="/image/{@id}.png" hspace="1" width="80" height="15" alt="{@id}"/>
+                </a>
+              </li>
+            </xsl:for-each>
+          </ul>
+          <div class="endsection"/>
+        </footer>
       </body>
     </html>
   </xsl:template>

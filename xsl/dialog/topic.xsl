@@ -14,7 +14,21 @@
  exclude-result-prefixes="exsl func php"
 >
   <xsl:import href="layout.xsl"/>
-  
+
+  <xsl:template name="breadcrumb">
+    <h3>
+      <a href="/">Home</a>
+      &#xbb;
+      <a href="/bytopic">
+        By Topic
+      </a>
+      &#xbb;
+      <a href="{func:linkTopic(/formresult/topic/@name)}">
+        <xsl:value-of select="/formresult/topic/@title"/>
+      </a>
+    </h3>
+  </xsl:template>
+
   <!--
    ! Template for page title
    !
@@ -137,23 +151,7 @@
    ! @purpose  Define main content
    !-->
   <xsl:template name="content">
-    <h3>
-      <a href="/">Home</a>
-      &#xbb;
-      <a href="{func:link('bytopic')}">
-        By Topic
-      </a>
-      &#xbb;
-      <a href="{func:link(concat('topic?', /formresult/topic/@name))}">
-        <xsl:value-of select="/formresult/topic/@title"/>
-      </a>
-    </h3>
-    <br clear="all"/>
-
     <xsl:for-each select="/formresult/topic/year">
-      <div class="datebox">
-        <h2><xsl:value-of select="position()"/></h2> 
-      </div>
       <h2>
         <xsl:value-of select="@num"/> - 
         <xsl:variable name="total" select="count(image)"/>

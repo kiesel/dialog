@@ -104,15 +104,6 @@
    ! @purpose  Define main content
    !-->
   <xsl:template name="content">
-    <div id="fb-root"></div>
-    <script>(function(d, s, id) {
-      var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) {return;}
-      js = d.createElement(s); js.id = id;
-      js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
-      fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));</script>
-
     <nav class="pager">
       <a id="previous" class="pager previous pager{/formresult/selected/prev != ''}" href="{func:linkImage(
         /formresult/album/@name,
@@ -190,20 +181,26 @@
         </xsl:if>
         </small>)
       </p>
-      <div id="fb-container">
-        <xsl:if test="/formresult/config/facebook/enable_like = 'true'">
-          <div class="fb-like" data-send="false" data-width="250" data-show-faces="true" data-colorscheme="dark" data-font="segoe ui"></div>
-        </xsl:if>
+      <div id="disqus-container">
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_developer = 1;
+          var disqus_shortname = 'dkname';
+        </script>
+        <script type="text/javascript"><![CDATA[
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'dkname'; // required: replace example with your forum shortname
 
-        <xsl:if test="/formresult/config/facebook/enable_comments = 'true'">
-          <div class="fb-comments" data-href="{func:linkImage(
-            /formresult/album/@name,
-            /formresult/selected/@chapter,
-            /formresult/selected/@type,
-            /formresult/selected/@number
-          )}" data-num-posts="5" data-width="500" data-colorscheme="dark"></div>
-        </xsl:if>
-        <div class="endsection"></div>
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+          ]]>
+        </script>
+        <noscript>Please enable JavaScript to view the comments</noscript>
+        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
       </div>
     </section>
   </xsl:template>

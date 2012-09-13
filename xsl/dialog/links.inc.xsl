@@ -77,4 +77,12 @@
       <xsl:value-of select="concat('/shot/', $shot, '/', $no)"/>
     </func:result>
   </func:function>
+
+  <func:function name="func:linkTopic">
+    <xsl:param name="topic"/>
+
+    <func:result>
+      <xsl:value-of select="concat('/topic/', $topic, '/')"/>
+    </func:result>
+   </func:function>
 </xsl:stylesheet>
