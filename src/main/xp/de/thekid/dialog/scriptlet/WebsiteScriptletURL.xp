@@ -63,6 +63,11 @@ class WebsiteScriptletURL extends XMLScriptletURL {
       $this.setValue('mode', $mode);
       return;
     }
+
+    if ('/about/' == $this.getPath()) {
+      $this.setStateName('about');
+      return;
+    }
     
     parent::extract();
   }
