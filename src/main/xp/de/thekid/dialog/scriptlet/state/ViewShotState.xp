@@ -18,6 +18,7 @@ import native standard.sscanf;
  */
 public class ViewShotState extends de.thekid.dialog.scriptlet.AbstractDialogState {
   public static string[] $modes= ['color', 'gray'];
+  private static string[] $nav= ['next', 'prev'];
 
   /**
    * Process this state.
@@ -31,6 +32,8 @@ public class ViewShotState extends de.thekid.dialog.scriptlet.AbstractDialogStat
       $s= $response.addFormResult(Node::fromObject($shot, 'selected'));
       $s.setAttribute('mode', self::$modes[$mode]);
       $s.setAttribute('page', $this.getDisplayPageFor($name));
+
+      $s.addChild(new Node(self::$nav[$mode]));
     }
   }
 }
