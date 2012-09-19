@@ -129,8 +129,17 @@ public class AbstractDialogState extends scriptlet.xml.workflow.AbstractState {
         $request.getEnvValue('DOCUMENT_ROOT') ~ '/../data/'
       );
 
-      $response.addFormresult(Node::fromArray($prop.readSection('general'), 'config'))
-        .addChild(Node::fromArray($prop.readSection('facebook'), 'facebook'));
+      $node= $response.addFormresult(Node::fromArray($prop.readSection('general'), 'config'));
+
+      $section= $prop.getFirstSection();
+      while ($section) {
+        if ('general' != $section && 'links' != $section) {
+          $node.addChild(Node::fromArray($prop.readSection($section), $section));
+        }
+
+        $section= $prop.getNextSection();
+      }
+
       $links= $response.addFormresult(new Node('links'));
       foreach ($name, $url in $prop.readSection('links')) {
         $links.addChild(new Node('link', null, [ id : $name, href : $url]));
