@@ -1,0 +1,58 @@
+/* This class is part of the XP framework's port "Dialog"
+ *
+ * $Id$ 
+ */
+
+package de.thekid.dialog.scriptlet;
+
+import scriptlet.HttpScriptlet;
+import scriptlet.HttpScriptletRequest;
+import scriptlet.HttpScriptletResponse;
+
+import io.streams.FileInputStream;
+import img.Image;
+import img.io.JpegStreamReader;
+import img.io.JpegStreamWriter;
+
+import native standard.min;
+
+/**
+ * Website scriptlet for the Dialog album
+ *
+ * @see   http://dialog.friebes.info/
+ */
+public class ResizeScriptlet extends HttpScriptlet {
+  protected
+    string $imgPath= null;
+
+  public void __construct(string $path= null) {
+    $this.imgPath= $path;
+  }
+
+  private string imagePath(HttpScriptletRequest $request) {
+    if (null == $this.imgPath) {
+      return $request.getEnvValue('DOCUMENT_ROOT');
+    }
+
+    return $this.imgPath;
+  }
+
+  public void doGet(HttpScriptletRequest $request, HttpScriptletResponse $response) {
+    $file= $request.getParam('p');
+    $width= $request.getParam('w') as int;
+    $height= $request.getParam('h') as int;
+
+    $fis= new FileInputStream($this.imagePath($request) ~ '/' ~ $file);
+    $img= Image::loadFrom(new JpegStreamReader($fis));
+    $resizedImg= Image::create($width, $height, IMG_TRUECOLOR);
+
+    // Find out multipliers
+    $factor= $img.getWidth() / $width;
+    $resizedImg.resampleFrom($img, 0, 0, 0, 0, $width, $height, $factor * $width, $factor * $height);
+
+    $response.setContentType('image/jpeg');
+    $response.setHeader('Expires', util.DateUtil::addDays(new util.Date(), 14).toString(DATE_RFC1123));
+    
+    $resizedImg.saveTo(new JpegStreamWriter($response.getOutputStream()));
+  }
+}

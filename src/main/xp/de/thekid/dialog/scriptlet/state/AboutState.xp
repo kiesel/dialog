@@ -1,0 +1,24 @@
+/* This class is part of the XP framework
+ *
+ * $Id$
+ */
+
+package de.thekid.dialog.scriptlet.state;
+
+import de.thekid.dialog.scriptlet.AbstractDialogState;
+import xml.Node;
+import xml.PCData;
+
+/**
+ * Handles /xml/imagestrip
+ *
+ */
+public class AboutState extends AbstractDialogState {
+
+  /**
+   * Process this state.
+   *
+   */
+  public void process(scriptlet.xml.workflow.WorkflowScriptletRequest? $request, scriptlet.xml.XMLScriptletResponse? $response, scriptlet.xml.workflow.Context? $context) {
+  }
+}
