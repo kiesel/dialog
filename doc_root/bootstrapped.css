@@ -1,0 +1,10 @@
+.static-entry {
+	clear: both;
+	margin-bottom: 100px;
+}
+
+img.dialog-photo {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
