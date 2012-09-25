@@ -16,6 +16,7 @@
 
   <xsl:import href="../layout.xsl"/>
   <xsl:import href="../breadcrumb.inc.xsl"/>
+  <xsl:import href="../metadata.inc.xsl"/>
 
   <xsl:template name="page-title">
     <xsl:value-of select="concat(
@@ -72,74 +73,4 @@
   <xsl:template match="next">
     <li class="next"><a href="{func:linkImage(../../album/@name, chapter, type, number)}">Next &#8594;</a></li>
   </xsl:template>
-
-  <xsl:template name="metadata">
-    <table class="table table-hover">
-      <caption>Photo metadata</caption>
-      <tbody>
-        <xsl:apply-templates select="exifData/width"/>
-        <xsl:apply-templates select="exifData/model"/>
-        <xsl:apply-templates select="exifData/exposureTime"/>
-        <xsl:apply-templates select="exifData/apertureFNumber"/>
-        <xsl:apply-templates select="exifData/isoSpeedRatings"/>
-        <xsl:apply-templates select="exifData/focalLength"/>
-        <xsl:apply-templates select="exifData/dateTime"/>
-        
-      </tbody>
-    </table>
-  </xsl:template>
-
-  <xsl:template match="exifData/width">
-    <tr>
-      <td>Dimension</td>
-      <td><xsl:value-of select="concat(., ' * ', ../height, ' px')"/></td>
-    </tr>
-  </xsl:template>    
-
-  <xsl:template match="exifData/model">
-    <tr>
-      <td>Camera</td>
-      <td><xsl:value-of select="concat(., ' by ', ../make)"/></td>
-    </tr>
-  </xsl:template>    
-
-  <xsl:template match="exifData/exposureTime">
-    <tr>
-      <td>Exposure time</td>
-      <td>
-        <xsl:value-of select="."/>
-      </td>
-    </tr>
-  </xsl:template>    
-
-  <xsl:template match="exifData/apertureFNumber">
-    <tr>
-      <td>Aperture</td>
-      <td><xsl:value-of select="."/></td>
-    </tr>
-  </xsl:template>    
-
-  <xsl:template match="exifData/isoSpeedRatings">
-    <tr>
-      <td>ISO</td>
-      <td><xsl:value-of select="."/></td>
-    </tr>
-  </xsl:template>    
-
-  <xsl:template match="exifData/focalLength">
-    <tr>
-      <td>Focal length</td>
-      <td><xsl:value-of select="."/> mm</td>
-    </tr>
-  </xsl:template>    
-
-  <xsl:template match="exifData/dateTime">
-    <tr>
-      <td>Taken at</td>
-      <td>
-        <xsl:value-of select="php:function('XSLCallback::invoke', 'xp.date', 'format', string(exifData/dateCreated/value), 'Y-m-d H:i')"/>
-      </td>
-    </tr>
-  </xsl:template>    
-
 </xsl:stylesheet>
