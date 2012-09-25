@@ -33,22 +33,26 @@
       <small>The Best Camera is the One That's With You</small></h1>
     </div>
 
-    <h3>About: Me</h3>
+    <h4><i class="icon-info-sign"/> about me</h4>
     <p>Being a software developer in my job, I am also a passionate photographer who takes
-      photographs every now and then.
+      photographs every now and then. This site shows a collection of photographs from the
+      time I bought my first camera until today.
+
+      I hope some progress in photographic skills
+      is visible when seeking through the archives :-).
     </p>
     <hr/>
 
-    <h3>About: My camera(s)</h3>
+    <h4><i class="icon-info-sign"/> about the cameras</h4>
     <p>
-      This is my private photographic blog which I maintain since around 2004. Most of the 
+      This is my private photographic blog which I maintain since 2004. Most of the
       pictures have been taken by one of my cameras - which have changed over the time:
       <ul>
         <li>Casio Exilim Z40 (consumer-grade camera, built-in lens)
         </li>
         <li>Konica-Minolta Dynax 7D
           <ul>
-            <li>kit lens 18-100mm f/3,5-5,6</li>
+            <li>D7D kit lens 28-100mm f/3,5-5,6</li>
             <li>Minolta 70-300mm f/3,5-5,6</li>
             <li>Minolta 24mm f/2,8</li>
             <li>100mm f/3,5</li>
@@ -64,9 +68,10 @@
     </p>
     <hr/>
 
-    <h3>About: This software</h3>
+    <h4><i class="icon-info-sign"/> about the software</h4>
     <p>
-      This website has been built by me, but it's heavily based on work by others. This includes:
+      The software used to render these photographs is called Dialog and was initially written (and still is maintained) by Timm Friebe. This website runs a modified version of his original software, keeping the main functionality.<br/>
+      Web software running here include:
       <ul>
         <li><a href="http://github.com/thekid/dialog">dialog</a></li>
         <li><a href="http://github.com/xp-framework/xp-framework">XP Framework</a></li>
