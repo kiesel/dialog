@@ -1,0 +1,35 @@
+/* This class is part of the XP framework
+ *
+ * $Id$ 
+ */
+
+package de.thekid.dialog.io;
+
+import img.Image;
+
+/**
+ * Processes images, creating the "full" and thumbnail versions of
+ * specified files and extracting their EXIF and IPTC data.
+ *
+ */
+public class KeepOriginalImageProcessor extends ImageProcessor {
+
+  /**
+   * Helper method to copy original image.
+   *
+   */
+  public Image originalImageFor(Image? $origin, img.util.ExifData? $exifData) {
+    return $origin;
+  }
+  
+  /**
+   * Retrieve a list of targets to be transformed
+   *
+   */
+  public ProcessorTarget[] targetsFor(io.File? $in) {
+    return [
+      new ProcessorTarget('thumbImageFor', 'thumb.' ~ $in.getFilename(), false, false),
+      new ProcessorTarget('originalImageFor', $in.getFilename(), false, true)
+    ];
+  }
+}

@@ -49,13 +49,21 @@ public abstract class ImportCommand extends Command {
   protected int $HIGHLIGHTS_MAX       = 5;
   protected int $ENTRIES_PER_PAGE     = 5;
   protected ImageProcessor $processor = null;
+  protected string $processorClass    = null;
   protected [:Topic] $topics          = [:];
 
   /**
-   * Constructor - initializes image processor.
+   * Constructor
    *
    */
   public __construct() {
+  }
+
+  /**
+   * Initializes image processor.
+   *
+   */
+  protected void setupProcessor() {
     $this.processor= $this.getProcessor();
     $this.processor.fullDimensions= [800, 600];
     $this.processor.addFilter(new ConvolveFilter(
@@ -91,11 +99,20 @@ public abstract class ImportCommand extends Command {
   }
 
   /**
+   * Set processor
+   *
+   */
+  [@arg(name= 'imageprocessor', short= 'ip')]
+  public void setImageProcessor(string $className= 'ImageProcessor') {
+    $this.processorClass= 'de.thekid.dialog.io.' ~ $className;
+  }
+
+  /**
    * Returns processor
    *
    */
   protected ImageProcessor getProcessor() {
-    return new ImageProcessor();
+    return lang.XPClass::forName($this.processorClass).newInstance();
   }
 
   /**
@@ -151,6 +168,7 @@ public abstract class ImportCommand extends Command {
    *
    */
   public void run() {
+    $this.setupProcessor();
     $this.out.writeLine('===> Starting import at ', new Date().toString('r'));
     $this.doImport();
 
