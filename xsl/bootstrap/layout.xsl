@@ -31,7 +31,7 @@
 
         <link rel="stylesheet" href="/{/formresult/config/style}.css"/>
         <link rel="stylesheet" href="/bootstrap/css/bootstrap.css"/>
-        <link rel="stylesheet" href="/font-awesome/css/font-awesome.css"/>
+        <link rel="stylesheet" href="/Font-Awesome/css/font-awesome.css"/>
 
         <!-- Enable bootstrap responsive -->
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -72,15 +72,13 @@
           <div class="content container">
             <xsl:call-template name="content"/>
 
+            <hr/>
             <p>
               <xsl:apply-templates select="/formresult/config/copyright"/>
               <xsl:apply-templates select="/formresult/links"/>
             </p>
           </div>
-          <div class="push"/>
         </div>
-
-        <hr/>
 
         <script type="text/javascript" src="/js/jquery-1.8.1.min.js"></script>
         <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
