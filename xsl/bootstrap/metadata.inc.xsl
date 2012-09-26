@@ -90,7 +90,7 @@
     <tr>
       <td>Taken at</td>
       <td>
-        <xsl:value-of select="php:function('XSLCallback::invoke', 'xp.date', 'format', string(exifData/dateCreated/value), 'Y-m-d H:i')"/>
+        <xsl:value-of select="php:function('XSLCallback::invoke', 'xp.date', 'format', string(value), 'Y-m-d H:i')"/>
       </td>
     </tr>
   </xsl:template>    
