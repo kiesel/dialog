@@ -35,11 +35,7 @@
   </xsl:template>
 
   <xsl:template match="selected">
-    <div class="tabbable tabs-right">
-      <ul class="nav nav-tabs">
-        <li class="active"><a href="#photo" data-toggle="tab">Photo</a></li>
-        <li><a href="#meta" data-toggle="tab">Metadata</a></li>
-      </ul>
+    <div class="tabbable tabs-below">
       <div class="tab-content">
         <div class="tab-pane active" id="photo">
           <div class="photo-center">
@@ -62,6 +58,10 @@
           <xsl:call-template name="metadata"/>
         </div>
       </div>
+      <ul class="nav nav-tabs">
+        <li class="active"><a href="#photo" data-toggle="tab">Photo</a></li>
+        <li><a href="#meta" data-toggle="tab">Metadata</a></li>
+      </ul>
     </div>
     <xsl:apply-templates select="/formresult/config/disqus"/>
   </xsl:template>
