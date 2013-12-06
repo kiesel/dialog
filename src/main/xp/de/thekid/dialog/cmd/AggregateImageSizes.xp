@@ -1,8 +1,3 @@
-/* This class is part of the XP framework
- *
- * $Id$ 
- */
-
 package de.thekid.dialog.cmd;
 
 import io.Folder;
@@ -20,9 +15,8 @@ import de.thekid.dialog.Topic;
 import de.thekid.dialog.AlbumImage;
 import img.util.ImageInfo;
 import util.collections.HashTable;
-
-import native standard.unserialize;
-import native standard.serialize;
+import remote.protocol.Serializer;
+import remote.protocol.SerializedData;
 
 /**
  * Aggregates image sizes
@@ -49,7 +43,7 @@ public class AggregateImageSizes extends util.cmd.Command {
     $this.base= new Folder($dir);
     $this.albumDataFiles= new FilteredIOCollectionIterator(
       new FileCollection(new Folder($this.base, 'data')),
-      new ExtensionEqualsFilter('.dat'),
+      new ExtensionEqualsFilter('.ser'),
       true
     );
   }
@@ -75,7 +69,7 @@ public class AggregateImageSizes extends util.cmd.Command {
    *
    */
   [@handles('de.thekid.dialog.Album')]
-  public void processAlbum(IEntry $entry) {
+  public void processAlbum(Album $entry) {
     $albumFolder= new Folder($this.base, 'doc_root/albums/' ~ $entry.getName());
     foreach ($highlight in $entry.highlights) {
       $this.aggregateDimensions($highlight, new File($albumFolder, $highlight.getName()));
@@ -92,7 +86,7 @@ public class AggregateImageSizes extends util.cmd.Command {
    *
    */
   [@handles('de.thekid.dialog.SingleShot')]
-  public void processSingleShot(IEntry $entry) {
+  public void processSingleShot(SingleShot $entry) {
     $this.aggregateDimensions($entry.getImage(), new File(new Folder($this.base, 'doc_root/shots'), 'color.' ~ $entry.getFileName()));
   }
 
@@ -102,14 +96,14 @@ public class AggregateImageSizes extends util.cmd.Command {
    *
    */
   [@handles('de.thekid.dialog.EntryCollection')]
-  public void processEntryCollection(IEntry $entry) {
+  public void processEntryCollection(EntryCollection $entry) {
     foreach ($element in $entry.entries) {
       $this.handle($element);
     }
   }
 
   [@handles('de.thekid.dialog.ImageStrip')]
-  public void processImageStrip(IEntry $entry) {
+  public void processImageStrip(ImageStrip $entry) {
     $albumFolder= new Folder($this.base, 'doc_root/albums/' ~ $entry.getName());
     foreach ($image in $entry.images) {
       $this.aggregateDimensions($image, new File($albumFolder, $image.getName()));
@@ -121,7 +115,7 @@ public class AggregateImageSizes extends util.cmd.Command {
    *
    */
   [@handles('de.thekid.dialog.Update')]
-  public void processUpdate(IEntry $entry) { }
+  public void processUpdate(Update $entry) { }
 
   /**
    * Handles topics. Intentionally empty, all topic images belong to one of the above
@@ -148,14 +142,16 @@ public class AggregateImageSizes extends util.cmd.Command {
       $this.out.writeLine('- ', $dataFile);
       
       // Read
-      $entry= unserialize(Streams::readAll($dataFile.getInputStream())) as IEntry;
+      $entry= $this.serializer.valueOf(new SerializedData(Streams::readAll($f))) as IEntry;
       $this.out.write('  ', $entry.getClassName(), ' [');
       
       // Process
       $this.handle($entry);
       
       // Write
-      $dataFile.getOutputStream().write(serialize($entry));
+      try ($out= $dataFile.getOutputStream()) {
+        $out.write($this.serializer.representationOf($entry));
+      }
       
       $this.out.writeLine(']');
     }

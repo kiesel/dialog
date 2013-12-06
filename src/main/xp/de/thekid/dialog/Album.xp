@@ -1,8 +1,3 @@
-/* This class is part of the XP framework
- *
- * $Id$ 
- */
-
 package de.thekid.dialog;
 
 import img.util.ExifData;
@@ -25,114 +20,44 @@ public class Album implements IEntry {
   public AlbumChapter[] $chapters = [];
 
   /**
-   * Set Name
-   *
+   * Constructor
    */
-  public void setName(string $name) {
-    $this.name= $name;
-  }
+  public __construct($this.name= null) { }
 
   /**
-   * Set Name
-   *
+   * Name accessors
    */
-  public self withName(string $name) {
-    $this.name= $name;
-    return $this;
-  }
+  public void setName($this.name) { }
+  public self withName($this.name) -> $this;
+  public string getName() -> $this.name;
 
   /**
-   * Get Name
-   *
+   * Title accessors
    */
-  public string getName() {
-    return $this.name;
-  }
+  public void setTitle($this.title) { }
+  public self withTitle($this.title) -> $this;
+  public string getTitle() -> $this.title;
 
   /**
-   * Set Title
-   *
+   * Description accessors
    */
-  public void setTitle(string $title) {
-    $this.title= $title;
-  }
+  public void setDescription($this.description) { }
+  public self withDescription($this.description) -> $this;
+  public string getDescription() -> $this.description;
 
   /**
-   * Set Title
-   *
+   * CreatedAt accessors
    */
-  public self withTitle(string $title) {
-    $this.title= $title;
-    return $this;
-  }
-
-  /**
-   * Get Title
-   *
-   * @return  string
-   */
-  public string getTitle() {
-    return $this.title;
-  }
-
-  /**
-   * Set CreatedAt
-   *
-   */
-  public void setCreatedAt(Date $createdAt) {
-    $this.createdAt= $createdAt;
-  }
-
-  /**
-   * Set CreatedAt
-   *
-   */
-  public self withCreatedAt(Date $createdAt) {
-    $this.createdAt= $createdAt;
-    return $this;
-  }
-
-  /**
-   * Get CreatedAt
-   *
-   */
-  public Date getCreatedAt() {
-    return $this.createdAt;
-  }
+  public void setCreatedAt($this.createdAt) { }
+  public self withCreatedAt($this.createdAt) -> $this;
+  public Date getCreatedAt() -> $this.createdAt;
 
   /**
    * Get date
    *
    * @see     xp://de.thekid.dialog.IEntry
    */
-  public Date getDate() {
-    return $this.createdAt;
-  }
-
-  /**
-   * Set Description
-   *
-   */
-  public void setDescription(string $description) {
-    $this.description= $description;
-  }
-
-  /**
-   * Set Description
-   *
-   */
-  public self withDescription(string $description) {
-    $this.description= $description;
-    return $this;
-  }
-
-  /**
-   * Get Description
-   *
-   */
-  public string getDescription() {
-    return $this.description;
-  }
+  public Date getDate() -> $this.createdAt;
 
   /**
    * Add an element to highlights
@@ -225,17 +150,20 @@ public class Album implements IEntry {
    *
    */
   public var imageUrn(string $name) {
-    for ($i= 0, $s= $this.highlights.length; $i < $s; $i++) {
-      if ($name === $this.highlights[$i].getName()) {
-        return ['type' : 'h', 'chapter' : 0, 'id' : $i];
-      }
+    foreach ($i, $highlight in $this.highlights) {
+      if ($name === $highlight.getName()) return [
+        type    : 'h',
+        chapter : 0,
+        id      : $i
+      ];
     }
-
-    for ($i= 0, $s= $this.chapters.length; $i < $s; $i++) {
-      for ($j= 0, $t= $this.chapters[$i].images.length; $j < $t; $j++) {
-        if ($name === $this.chapters[$i].images[$j].getName()) {
-          return ['type' : 'i', 'chapter' : $i, 'id' : $j];
-        }
+    foreach ($i, $chapter in $this.chapters) {
+      foreach ($j, $image in $chapter.images) {
+        if ($name === $image.getName()) return [
+          type    : 'i',
+          chapter : $i,
+          id      : $j
+        ];
       }
     }
     return null;
@@ -247,12 +175,12 @@ public class Album implements IEntry {
    */
   public string toString() {
     $hs= '';
-    for ($i= 0, $s= $this.highlights.length; $i < $s; $i++) {
-      $hs ~= '  ' ~ $this.highlights[$i].toString() ~ "\n";
+    foreach ($highlight in $this.highlights) {
+      $hs ~= '  ' ~ $highlight.toString() ~ "\n";
     }
     $cs= '';
-    for ($i= 0, $s= $this.chapters.length; $i < $s; $i++) {
-      $cs ~= '  ' ~ $this.chapters[$i].toString() ~ "\n";
+    foreach ($chapter in $this.chapters) {
+      $cs ~= '  ' ~ $chapter.toString() ~ "\n";
     }
     return sprintf(
       "%s(%s)@{\n" ~

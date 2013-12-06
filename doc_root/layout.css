@@ -1,30 +1,33 @@
 /* Layout stylesheet for Dialog
  *
- * $Id$
+ * $Id: layout.css 10631 2007-06-17 18:24:44Z friebe $
  */
 
 /* Common elements */
+* {
+  font-family: "Tahoma";
+}
 body {
   margin: 0px;
 }
 td, p, ul { 
-  font: 13px "Tahoma"; 
+  font-size: 13px;
   line-height: 20px;
 }
 h1 { 
   font: 42px "Arial narrow";
 }
 h2 { 
-  font: 19px "Tahoma"; 
+  font: 19px; 
   padding: 0px;
   margin: 1px;
 }
 h3 { 
-  font: bold 13px "Tahoma";
+  font: bold 13px;
   margin: 1px;
 }
 h4 { 
-  font: bold 13px "Tahoma"; 
+  font: bold 13px; 
   padding: 0px;
   margin: 0px;
 }
@@ -32,11 +35,20 @@ small {
   font: 13px "Georgia"; 
 }
 hr {
-  margin-bottom: 30px;
-  margin-top: 30px;
-  width: 90%; 
+  margin-bottom: 10px;
+  margin-top: 10px;
   border: 0;
   height: 1px;
+}
+#next {
+  font-size: 20px;
+  font-weight: bold;
+  padding-left: 4px;
+}
+#previous {
+  font-size: 20px;
+  font-weight: bold;
+  padding-right: 4px;
 }
 
 /* Page layout */
@@ -94,12 +106,21 @@ tr#header {
 }
 
 /* Images */
-table.highlights {
-  border-top: 1px solid;
+.highlights {
+  display: block;
 }
-table.highlights img {
+.highlights img {
   border: 2px solid;
+  margin: 1px;
 }
+.chapter {
+  display: block;
+}
+.chapter img {
+  border: 2px solid;
+  margin: 1px;
+}
+
 table.collection_list {
   border: none;
 }
@@ -108,9 +129,6 @@ table.collection_list img {
 }
 table.collection_list td {
   color: white;
-}
-table.chapter img {
-  border: 2px solid;
 }
 td#image img {
   border: 6px solid;
@@ -128,7 +146,6 @@ table.bydate_list td#content p {
   margin: 0px;
 }
 
-
 /* Paging elements */
 a.pager img {
   border: none;
@@ -145,4 +162,18 @@ img.singleshot {
 }
 img.singleshot_thumb {
   border: 2px solid;
+}
+
+/* Image display */
+.image {
+  text-align: center;
+}
+.image .display {
+  margin-left: auto;
+  margin-right: auto;
+}
+.viewport {
+  width: 466px; 
+  height: 236px;
+  background-position: 50% 50%;
 }

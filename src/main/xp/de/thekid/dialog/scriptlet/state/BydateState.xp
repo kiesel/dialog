@@ -1,8 +1,3 @@
-/* This class is part of the XP framework
- *
- * $Id$ 
- */
-
 package de.thekid.dialog.scriptlet.state;
 
 import scriptlet.xml.XMLScriptletRequest;
@@ -26,8 +21,7 @@ import de.thekid.dialog.scriptlet.EntryCollectionNodeHandler;
 
 import native standard.sscanf;
 import native standard.key;
-import native standard.min;
-import native standard.max;
+import native standard.array_search;
 
 /**
  * Handles /xml/bydate
@@ -77,18 +71,21 @@ public class BydateState extends de.thekid.dialog.scriptlet.AbstractDialogState 
    *
    */
   public void process(XMLScriptletRequest? $request, XMLScriptletResponse? $response, Context? $context) {
-    $year= null;
-    sscanf($request.getQueryString(), '%4d', $year);
+    $years= $this.getIndexYears() as int[];
 
     // Calculate year from newest item
-    if (null === $year) {
-      $newest= $this.getIndexPage(0);
-      sscanf(key($newest['entries']), '%4d', $year);
+    if (null === ($year= $request.getURL().getValue('year'))) {
+      $year= $years[0];
+      $pos= 0;
+    } else {
+      $pos= array_search($year, $years);
     }
 
     // Add paging information
-    $years= $this.getIndexYears();
-    $response.addFormResult(new Node('years', null, [ current : $year, min : min($years), max : max($years) ]));
+    with ($node= $response.addFormResult(new Node('years', null, [ current : $year ]))) {
+      if ($pos > 0) $node.setAttribute('next', $years[$pos - 1]);
+      if ($pos < $years.length - 1) $node.setAttribute('previous', $years[$pos + 1]);
+    }
 
     // Add index by years
     $index= $this.getIndexYear($year);
