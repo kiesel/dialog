@@ -15,27 +15,27 @@
 >
 
   <xsl:template match="highlights">
-    <ul class="thumbnails">
+    <div class="row">
       <xsl:apply-templates select="highlight"/>
-    </ul>
+    </div>
   </xsl:template>
 
   <xsl:template match="highlight[position()= 1]">
-    <li class="span6">
+    <div class="col-md-6">
       <a class="thumbnail" href="{func:linkImage(../../@name, 0, 'h', position()- 1)}">
         <div class="dialog-image-crop">
           <xsl:copy-of select="func:imageResized(concat('/albums/', ../../@name, '/', name), 560, 370)"/>
         </div>
       </a>
-    </li>
+    </div>
   </xsl:template>
 
   <xsl:template match="highlight[position() &gt; 1]">
-    <li class="span3">
+    <div class="col-md-3">
       <a class="thumbnail" href="{func:linkImage(../../@name, 0, 'h', position()- 1)}">
         <xsl:copy-of select="func:imageResized(concat('/albums/', ../../@name, '/', name), 260, 170)"/>
       </a>
-    </li>
+    </div>
   </xsl:template>
 
   <xsl:template match="highlight">

@@ -60,21 +60,21 @@
   <xsl:template match="images">
     <xsl:param name="chapter"/>
 
-    <ul class="thumbnails">
+    <div class="row">
       <xsl:apply-templates select="image">
         <xsl:with-param name="chapter" select="$chapter"/>
       </xsl:apply-templates>
-    </ul>
+    </div>
   </xsl:template>
 
   <xsl:template match="image">
     <xsl:param name="chapter"/>
 
-    <li class="span3">
+    <div class="col-md-3">
       <a href="{func:linkImage(../../../../@name, $chapter, 'i', position()- 1)}" class="thumbnail" rel="tooltip" title="Click thumbnail to view album">
         <xsl:copy-of select="func:imageResized(concat('/albums/', ../../../../@name, '/', name), 260, 170)"/>
       </a>
-    </li>
+    </div>
   </xsl:template>
 
 </xsl:stylesheet>

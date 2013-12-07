@@ -20,7 +20,7 @@
     <xsl:param name="height"/>
 
     <func:result>
-      <img src="{concat('/resize/?p=', $path, '&amp;w=', $width, '&amp;h=', $height)}" alt=""/>
+      <img class="img-responsive" src="{concat('/resize/?p=', $path, '&amp;w=', $width, '&amp;h=', $height)}" alt=""/>
     </func:result>
   </func:function>
 
