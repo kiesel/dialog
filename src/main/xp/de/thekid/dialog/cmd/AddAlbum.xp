@@ -1,23 +1,16 @@
-/* This file is part of the XP framework
- *
- * $Id$
- */
-
 package de.thekid.dialog.cmd;
 
 import de.thekid.dialog.GroupingStrategy;
 import de.thekid.dialog.Album;
 import de.thekid.dialog.AlbumChapter;
+import lang.IllegalArgumentException;
 
 import native standard.sprintf;
-import native standard.unserialize;
 import native standard.is_file;
 import native standard.file_get_contents;
 import native standard.usort;
 import native core.create_function;
 import native standard.sizeof;
-import native standard.serialize;
-
 
 /**
  * Adds albums to dialog. Will import a complete directory of (original) 
@@ -76,11 +69,8 @@ import native standard.serialize;
  *     The online name is used in permalinks.
  *   </li>
  * </ul>
- *
- * @purpose  Command
  */
 public class AddAlbum extends ImportCommand {
-  const int HIGHLIGHTS_MAX = 5;
   protected io.Folder $origin= null;
   protected io.Folder $destination= null;
   protected io.File $albumStorage= null;
@@ -91,8 +81,6 @@ public class AddAlbum extends ImportCommand {
 
   /**
    * Set origin folder
-   *
-   * @param   string folder
    */
   [@arg(position= 0)]
   public void setOrigin(string $folder) {
@@ -105,19 +93,13 @@ public class AddAlbum extends ImportCommand {
   /**
    * Set album's title. If no title is given and the album did not 
    * previously exist, uses the origin folder's directory name.
-   *
-   * @param   string title default NULL
    */
   [@arg]
-  public void setTitle(string $title= null) {
-    $this.title= $title;
-  }
+  public void setTitle($this.title= null) { }
 
   /**
    * Set album's creation date. If no date is given and the album did not 
    * previously exist, uses the origin folder's creation date.
-   *
-   * @param   string date default NULL
    */
   [@arg]
   public void setCreatedAt(string $date= null) {
@@ -128,14 +110,13 @@ public class AddAlbum extends ImportCommand {
    * Sets how to group images into chapters (one of "hour" or "day")
    *
    * @see     xp://de.thekid.dialog.GroupingStrategy
-   * @param   string method default "hour"
    */
   [@arg]
   public void setGroupBy(string $method= 'hour') {
     try {
-      $this.groupingStrategy= lang.Enum::valueOf(lang.XPClass::forName('de.thekid.dialog.GroupingStrategy'), $method);
-    } catch (lang.IllegalArgumentException $e) {
-      throw new lang.IllegalArgumentException(sprintf(
+      $this.groupingStrategy= lang.Enum::valueOf(de.thekid.dialog.GroupingStrategy::class, $method);
+    } catch (IllegalArgumentException $e) {
+      throw new IllegalArgumentException(sprintf(
         'Unknown grouping method "%s", supported: %s',
         $method,
         xp::stringOf(GroupingStrategy::values())
@@ -146,7 +127,6 @@ public class AddAlbum extends ImportCommand {
       
   /**
    * Import
-   *
    */
   protected void doImport() {
     $jpegs= new io.collections.iterate.AnyOfFilter([
@@ -164,10 +144,10 @@ public class AddAlbum extends ImportCommand {
     $this.processor.setOutputFolder($this.destination);
     
     // Check if the album already exists
-    $this.albumStorage= new io.File($this.dataFolder, $albumName ~ '.dat');
+    $this.albumStorage= new io.File($this.dataFolder, $albumName ~ '.ser');
     if ($this.albumStorage.exists()) {
       $this.out.writeLine('---> Found existing album');
-      $this.album= unserialize(io.FileUtil::getContents($this.albumStorage));
+      $this.album= $this.unserialize($this.albumStorage) as Album;
 
       // Entries will be regenated from scratch    
       $this.album.highlights= $this.album.chapters= [];
@@ -176,13 +156,12 @@ public class AddAlbum extends ImportCommand {
       $this.album= new Album();
       $this.album.setName($albumName);
     }
-    
-    // If not specified: Read the title from title.txt if existant, use the 
-    // directory name otherwise
+
+    // When no title is passed in, either use an existing one, or read the title 
+    // from title.txt if existant, failling back to the directory name otherwise
     if (null !== $this.title) {
       $this.album.setTitle($this.title);
-    } else {
-
+    } else if (!$this.album.getTitle()) {
       if (is_file($tf= $this.origin.getURI() ~ 'title.txt')) {
         $this.album.setTitle(file_get_contents($tf));
       } else {
@@ -201,7 +180,7 @@ public class AddAlbum extends ImportCommand {
     
     // Get highlights
     $highlights= new io.Folder($this.origin.getURI() ~ 'highlights');
-    $needsHighlights= self::HIGHLIGHTS_MAX;
+    $needsHighlights= $this.HIGHLIGHTS_MAX;
     if ($highlights.exists()) {
       for (
         $it= new io.collections.iterate.FilteredIOCollectionIterator(new io.collections.FileCollection($highlights.getURI()), $jpegs);
@@ -213,7 +192,7 @@ public class AddAlbum extends ImportCommand {
         $this.album.addHighlight($highlight);
         $this.out.writeLine('     >> Added highlight ', $highlight.getName());
       }
-      $needsHighlights= self::HIGHLIGHTS_MAX - $this.album.numHighlights();
+      $needsHighlights= $this.HIGHLIGHTS_MAX - $this.album.numHighlights();
     }
     
     // Process all images
@@ -260,7 +239,7 @@ public class AddAlbum extends ImportCommand {
     $this.out.writeLine('---> Created ', $this.album.getCreatedAt());
     
     // Save album and topics
-    io.FileUtil::setContents($this.albumStorage, serialize($this.album));
+    $this.serialize($this.album, $this.albumStorage);
   }
 }
 

@@ -1,8 +1,3 @@
-/* This class is part of the XP framework
- *
- * $Id$ 
- */
-
 package de.thekid.dialog.unittest;
 
 import unittest.TestCase;
@@ -161,12 +156,68 @@ public class WebsiteScriptletURLTest extends TestCase {
       'index'   : '9'
     ]);
   }
-  
+
+  /**
+   * View imagestrip
+   *
+   */
+  [@test] public void viewImageStrip() {
+    $this.assertState('/imagestrip/someStrip', 'imagestrip', [ 'imagestrip' : 'someStrip']);
+  }
+
+  /**
+   * View topic
+   *
+   */
+  [@test] public void viewTopic() {
+    $this.assertState('/topic/someTopic', 'topic', [ 'topic' : 'someTopic']);
+  }
+
+  /**
+   * View topic
+   *
+   */
+  [@test] public void browseTopic() {
+    $this.assertState('/topic/someTopic/someOrigin,0', 'topic/browse', [ 'topic' : 'someTopic', 'origin' : 'someOrigin', 'index' : 0]);
+  }
+
   /**
    * Old-style URLs (/xml/...) are still supported
    *
    */
   [@test] public void legacyUrlStillSupported() {
     $this.assertState('/xml/bytopic', 'bytopic');
+  }
+
+  /**
+   * New /by/topic url
+   *
+   */
+  [@test] public void byTopic() {
+    $this.assertState('/by/topic', 'bytopic', [ page : 0 ]);
+  }
+
+  /**
+   * New /by/topic/page/1 url
+   *
+   */
+  [@test] public void byTopicPage1() {
+    $this.assertState('/by/topic/page/1', 'bytopic', [ page : 1 ]);
+  }
+
+  /**
+   * New /by/date url
+   *
+   */
+  [@test] public void byDate() {
+    $this.assertState('/by/date', 'bydate', [ year : null ]);
+  }
+
+  /**
+   * New /by/date/2010 url
+   *
+   */
+  [@test] public void byDate2010() {
+    $this.assertState('/by/date/2010', 'bydate', [ year : 2010 ]);
   }
 }

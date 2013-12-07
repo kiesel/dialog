@@ -4,10 +4,88 @@ $Id$
 
 Version ?.?.?, released ????-??-??
 ----------------------------------
-SVN version: ?????
+Git commit: 
+
+Heads up!
+~~~~~~~~~
+- Changed to use XP Compiler 2.0.0. With it, all classes are now emitted
+  with PHP 5.3 namespaces. This results in the necessity to migrate the
+  the serialized data using "xpcli de.thekid.dialog.cmd.MigrateStorage"!
 
 Features
 ~~~~~~~~
+- Implemented feature request #16 - Browser for /bytopic
+  (friebe)
+
+Bugfixes
+~~~~~~~~
+- Fixed issue #24 - ByTopic image count
+  (friebe)
+
+
+Version 3.0.0, released 2011-12-26
+----------------------------------
+Git commit: 7a1c52511421229ac06e075fcaad0ae25f7891cc
+
+Heads up!
+~~~~~~~~~
+- Changed chapter image rendering to use divs floating left instead of 
+  HTML tables in album and chapter overviews.
+  (friebe)
+- Changed highlight rendering to use divs floating left instead of HTML
+  tables - in browse, by date, by topic, albums and collections overviews
+  (friebe)
+- Changed "By topic" overview to show only the newest 10 images per
+  topic for performance reasons
+  (friebe)
+- Changed image and shot view as well as image strip document layout
+  to use a div instead of a HTML table
+  (friebe)
+
+Bugfixes
+~~~~~~~~
+- Fixed issue #19 - ByDate Exception (when years index not continuous)
+  (friebe)
+- Fixed issue #23 - Images not displaying (when their filenames include 
+  characters that need encoding)
+  (friebe)
+- Fixed issue #21 - Vertical Shot Spacing
+  (friebe)
+
+Features
+~~~~~~~~
+- Added FTP strategy for synchronization (name: ftp) - see issue #22
+  (friebe)
+- Changed chapter view to zoom in on first picture if there are more 
+  than three pictures in this chapter. This gives the chapter overview a
+  distinguishable design from the album overview.
+  (friebe)
+- Also added pager at the bottom of chapter pages
+  (friebe)
+- Added RSS link (id: "rss") to top navigation as suggested in issue #9
+  (friebe)
+- Reworked design in "By topic" - shows a excerpt from the first of
+  the 10 newest puctures and then all other nine nicely aligned around.
+  See issue #5
+  (friebe)
+- Added topics to a displayed album highlight, image or single shot.
+  Implements feature suggested in issue #6
+  (friebe)
+- Added short URL for topics - /topics
+  (friebe)
+- Added short URL for imagestrips - /imagestrip. Implements issue #18.
+  (friebe)
+- Added short URL for "By topic" - /by/topic. Implements issue #4.
+  (friebe)
+- Added short URL for "By date" - /by/date. Implements issue #3.
+  (friebe)
+- Added new designs - simple-white, and full-black
+  (friebe)
+- Implemented rsync over ssh strategy for synchronization (name: rsync)
+  (friebe)
+- Added de.thekid.dialog.cmd.Synchronize command tool to synchronize
+  local installation with remote
+  (friebe)
 - Added OpenGraph support - see issue #2
   (friebe)
   
@@ -26,7 +104,6 @@ Heads up!
   an "img"-tag to make inner borders possible. To style your image, use
   the selector ".image .display" instead of "#image img" in your CSS!
   (friebe)
- 
 
 Features
 ~~~~~~~~

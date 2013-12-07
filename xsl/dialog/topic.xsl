@@ -9,6 +9,7 @@
  xmlns:exsl="http://exslt.org/common"
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
  xmlns:func="http://exslt.org/functions"
+ xmlns:str="http://exslt.org/strings"
  xmlns:php="http://php.net/xsl"
  extension-element-prefixes="func"
  exclude-result-prefixes="exsl func php"
@@ -41,53 +42,28 @@
   </xsl:template>
 
   <xsl:template match="image[@origin-class = 'de.thekid.dialog.Album']">
-    <a href="{func:linkImage(@origin-name, @origin-chapter, @origin-type, @origin-id)}">
-      <img width="150" height="113" border="0" src="/albums/{@origin-name}/thumb.{@name}"/>
+    <a href="{func:linkTopic(/formresult/topic/@name)}/{@origin-name},{@id}">
+      <img width="150" height="113" border="0" src="/albums/{@origin-name}/thumb.{str:encode-uri(@name, false())}"/>
     </a>
   </xsl:template>
 
   <xsl:template match="image[@origin-class = 'de.thekid.dialog.EntryCollection']">
-    <a href="{func:linkImage(@origin-name, @origin-chapter, @origin-type, @origin-id)}">
-      <img width="150" height="113" border="0" src="/albums/{@origin-name}/thumb.{@name}"/>
+    <a href="{func:linkTopic(/formresult/topic/@name)}/{@origin-name},{@id}">
+      <img width="150" height="113" border="0" src="/albums/{@origin-name}/thumb.{str:encode-uri(@name, false())}"/>
     </a>
   </xsl:template>
 
   <xsl:template match="image[@origin-class = 'de.thekid.dialog.SingleShot']">
-    <a href="{func:linkShot(@origin-name, @origin-id)}">
-      <img width="150" height="113" border="0" src="/shots/thumb.color.{@name}"/>
+    <a href="{func:linkTopic(/formresult/topic/@name)}/{@origin-name},{@id}">
+      <img width="150" height="113" border="0" src="/shots/thumb.color.{str:encode-uri(@name, false())}"/>
     </a>
   </xsl:template>
 
   <xsl:template match="image[@origin-class = 'de.thekid.dialog.ImageStrip']">
-    <a href="{func:linkImageStrip(@origin-name)}#{@origin-id}">
-      <img width="150" height="113" border="0" src="/albums/{@origin-name}/thumb.{@name}"/>
+    <a href="{func:linkTopic(/formresult/topic/@name)}/{@origin-name},{@id}">
+      <img width="150" height="113" border="0" src="/albums/{@origin-name}/thumb.{str:encode-uri(@name, false())}"/>
     </a>
   </xsl:template>
-
-  <!--
-   ! Function that draws the highlights
-   !
-   ! @see      ../layout.xsl
-   ! @purpose  Define main content
-   !-->
-  <func:function name="func:highlights">
-    <xsl:param name="entries"/>
-    <xsl:param name="i" select="1"/>
-    <xsl:param name="max" select="5"/>
-    
-    <func:result>
-      <tr>
-        <xsl:for-each select="exsl:node-set($entries)[position() &gt;= $i and position() &lt; $i + $max]">
-          <td>
-            <xsl:apply-templates select="."/>
-          </td>
-        </xsl:for-each>
-      </tr>
-      <xsl:if test="$i &lt; count(exsl:node-set($entries))">
-        <xsl:copy-of select="func:highlights(exsl:node-set($entries), $i + $max)"/>
-      </xsl:if>
-    </func:result>  
-  </func:function>
 
   <!--
    ! Template for albums
@@ -95,9 +71,16 @@
    ! @purpose  Specialized entry template
    !-->
   <xsl:template match="entry[@type = 'de.thekid.dialog.Album']">
-    <a title="Album of {@num_images} images in {@num_chapters} chapters" href="{func:linkAlbum(@name)}">
-      <xsl:value-of select="@title"/>
-    </a>
+    <h3>
+      <a href="{func:linkAlbum(@name)}">
+        <xsl:value-of select="@title"/>
+      </a>
+      (<xsl:value-of select="@num_images"/> images in <xsl:value-of select="@num_chapters"/> chapters)
+    </h3>
+    <p align="justify">
+      <xsl:apply-templates select="description"/>
+      <br clear="all"/>
+    </p>
   </xsl:template>
   
   <!--
@@ -106,9 +89,16 @@
    ! @purpose  Specialized entry template
    !-->
   <xsl:template match="entry[@type = 'de.thekid.dialog.Update']">
-    <a title="Update" href="{func:linkAlbum(@album)}">
-      <xsl:value-of select="@title"/>
-    </a>
+    <h3>
+      <a href="{func:linkAlbum(@album)}">
+        <xsl:value-of select="@title"/>
+      </a>
+      (Update)
+    </h3>
+    <p align="justify">
+      <xsl:apply-templates select="description"/>
+      <br clear="all"/>
+    </p>
   </xsl:template>
 
   <!--
@@ -117,9 +107,34 @@
    ! @purpose  Specialized entry template
    !-->
   <xsl:template match="entry[@type = 'de.thekid.dialog.SingleShot']">
-    <a title="Featured image" href="{func:linkShot(@name, 0)}">
-      <xsl:value-of select="@title"/>
-    </a>
+    <h3>
+      <a href="{func:linkShot(@name, 0)}">
+        <xsl:value-of select="@title"/>
+      </a>
+      (Featured image)
+    </h3>
+    <p align="justify">
+      <xsl:apply-templates select="description"/>
+      <br clear="all"/>
+    </p>
+  </xsl:template>
+
+  <!--
+   ! Template for image strips
+   !
+   ! @purpose  Specialized entry template
+   !-->
+  <xsl:template match="entry[@type = 'de.thekid.dialog.ImageStrip']">
+    <h3>
+      <a href="{func:linkImageStrip(@name)}">
+        <xsl:value-of select="@title"/>
+      </a>
+      (Image strip with <xsl:value-of select="@num_images"/> images)
+    </h3>
+    <p align="justify">
+      <xsl:apply-templates select="description"/>
+      <br clear="all"/>
+    </p>
   </xsl:template>
 
   <!--
@@ -128,20 +143,16 @@
    ! @purpose  Specialized entry template
    !-->
   <xsl:template match="entry[@type = 'de.thekid.dialog.EntryCollection']">
-    <a title="Collection of {@num_entries}" href="{func:linkCollection(@name)}">
-      <xsl:value-of select="@title"/>
-    </a>
-  </xsl:template>
-
-  <!--
-   ! Template for collections 
-   !
-   ! @purpose  Specialized entry template
-   !-->
-  <xsl:template match="entry[@type = 'de.thekid.dialog.ImageStrip']">
-    <a title="Image strip with {@num_images} images" href="{func:linkImageStrip(@name)}">
-      <xsl:value-of select="@title"/>
-    </a>
+    <h3>
+      <a href="{func:linkCollection(@name)}">
+        <xsl:value-of select="@title"/>
+      </a>
+      (Collection of <xsl:value-of select="@num_entries"/>)
+    </h3>
+    <p align="justify">
+      <xsl:apply-templates select="description"/>
+      <br clear="all"/>
+    </p>
   </xsl:template>
 
   <!--
@@ -151,6 +162,19 @@
    ! @purpose  Define main content
    !-->
   <xsl:template name="content">
+    <h3>
+      <a href="/">Home</a>
+      &#xbb;
+      <a href="{func:linkByTopic()}">
+        By Topic
+      </a>
+      &#xbb;
+      <a href="{func:linkTopic(/formresult/topic/@name)}">
+        <xsl:value-of select="/formresult/topic/@title"/>
+      </a>
+    </h3>
+    <br clear="all"/>
+
     <xsl:for-each select="/formresult/topic/year">
       <h2>
         <xsl:value-of select="@num"/> - 
@@ -160,19 +184,27 @@
           <xsl:otherwise><xsl:value-of select="$total"/> images</xsl:otherwise>
         </xsl:choose>
       </h2>
-      <p>
-        Images originate from 
-        <xsl:for-each select="entry">
-          <xsl:apply-templates select="."/>
-          <xsl:if test="position() &lt; last()">, </xsl:if>
+      <div class="highlights">
+        <xsl:for-each select="image">
+          <div style="float: left">
+            <xsl:apply-templates select="."/>
+          </div>
         </xsl:for-each>
-      </p>
-      <table class="highlights" border="0">
-        <tr>
-          <xsl:copy-of select="func:highlights(exsl:node-set(image))"/>
-        </tr>
+        <br clear="all"/>
+      </div>
+      <table class="bydate_list" border="0" width="770">
+        <xsl:for-each select="entry">
+          <tr>
+            <td id="day" valign="top">
+              <h2><xsl:value-of select="php:function('XSLCallback::invoke', 'xp.date', 'format', string(created/value), 'M')"/></h2>
+            </td>
+            <td id="content" valign="top">
+              <xsl:apply-templates select="."/>
+            </td>
+          </tr>
+        </xsl:for-each>
       </table>
-      <br clear="all"/>
+      <br clear="all"/><hr/>
     </xsl:for-each>
     
   </xsl:template>

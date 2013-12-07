@@ -1,8 +1,3 @@
-/* This file is part of the XP framework
- *
- * $Id$
- */
-
 package de.thekid.dialog.cmd;
 
 import io.Folder;
@@ -13,8 +8,6 @@ import util.Date;
 
 import de.thekid.dialog.SingleShot;
 
-import native standard.serialize;
-import native standard.unserialize;
 import native standard.is_file;
 import native standard.file_get_contents;
 import native standard.substr;
@@ -50,7 +43,6 @@ import native standard.strpos;
  * Example: When adding IMG_6100.jpg as featured image, content from a
  * file by name IMG_6100.txt (in the same directory as the image) will 
  * be used as description.
- *
  */
 public class AddSingleShot extends ImportCommand {
   protected File $origin;
@@ -70,7 +62,6 @@ public class AddSingleShot extends ImportCommand {
 
   /**
    * Set origin file
-   *
    */
   [@arg(position= 0)]
   public void setOrigin(string $file) {
@@ -83,26 +74,21 @@ public class AddSingleShot extends ImportCommand {
   /**
    * Set shots's title. If no title is given and the shot did not 
    * previously exist, uses the origin file's name.
-   *
    */
   [@arg]
-  public void setTitle(string $title= null) {
-    $this.title= $title;
-  }
+  public void setTitle($this.title= null) { }
 
   /**
    * Set shots's creation date. If no date is given and the shot did not 
    * previously exist, uses the origin file's creation date.
-   *
    */
   [@arg]
   public void setCreatedAt(string $date= null) {
-    $this.createdAt= $date;
+    $this.createdAt= $date ? new util.Date($date) : null;
   }
 
   /**
    * Import
-   *
    */
   protected void doImport() {
 
@@ -114,10 +100,10 @@ public class AddSingleShot extends ImportCommand {
     $this.processor.setOutputFolder($this.shotsFolder);
 
     // Check if the shot already exists
-    $this.shotStorage= new File($this.dataFolder, $shotName ~ '.dat');
+    $this.shotStorage= new File($this.dataFolder, $shotName ~ '.ser');
     if ($this.shotStorage.exists()) {
       $this.out.writeLine('--> Found existing shot');
-      $shot= unserialize(FileUtil::getContents($this.shotStorage)) as SingleShot;
+      $shot= $this.unserialize($this.shotStorage) as SingleShot;
     } else {
       $this.out.writeLine('--> Creating new shot');
       $shot= new SingleShot();
@@ -151,6 +137,6 @@ public class AddSingleShot extends ImportCommand {
     $shot.setImage($image);
 
     // Save shot
-    FileUtil::setContents($this.shotStorage, serialize($shot));
+    $this.serialize($shot, $this.shotStorage);
   }
 }

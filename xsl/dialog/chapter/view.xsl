@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <!--
- ! Stylesheet for home page
- !
- ! $Id$
+ ! View a chapter
  !-->
 <xsl:stylesheet
  version="1.0"
  xmlns:exsl="http://exslt.org/common"
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
  xmlns:func="http://exslt.org/functions"
+ xmlns:str="http://exslt.org/strings"
  xmlns:php="http://php.net/xsl"
- extension-element-prefixes="func"
- exclude-result-prefixes="exsl func php"
+ extension-element-prefixes="func str"
+ exclude-result-prefixes="exsl func php str"
 >
   <xsl:import href="../layout.xsl"/>
   
@@ -37,7 +36,7 @@
     <meta property="og:type" content="album" />
     <xsl:apply-templates select="/formresult/chapter" mode="og"/>
   </xsl:template>
-
+  
   <!--
    ! Template for breadcrumb
    !
@@ -74,8 +73,6 @@
   <!--
    ! Function that draws the images of a chapter
    !
-   ! @see      ../layout.xsl
-   ! @purpose  Define main content
    !-->
   <func:function name="func:chapter-images">
     <xsl:param name="album"/>
