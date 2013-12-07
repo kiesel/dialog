@@ -19,12 +19,12 @@
   </xsl:template>
 
   <xsl:template match="/" mode="breadcrumb">
-    <ul class="breadcrumb">
+    <ol class="breadcrumb">
       <li><a href="/">Home</a></li>
       <xsl:apply-templates select="/formresult/collection" mode="breadcrumb"/>
       <xsl:apply-templates select="/formresult/album" mode="breadcrumb"/>
       <xsl:apply-templates select="/formresult/selected" mode="breadcrumb"/>
-    </ul>
+    </ol>
   </xsl:template>
 
   <xsl:template match="@page" mode="breadcrumb">

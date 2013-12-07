@@ -35,27 +35,24 @@
     </ul>
   </xsl:template>
 
-
   <xsl:template match="pager">
-    <div class="pagination pagination-right">
-      <ul>
-        <li>
-          <xsl:if test="@offset = 0"><xsl:attribute name="class">disabled</xsl:attribute></xsl:if>
-          <a href="{func:linkPage(@offset - 1)}">&#xab;</a>
-        </li>
+    <ul class="pagination pagination-sm pull-right">
+      <li>
+        <xsl:if test="@offset = 0"><xsl:attribute name="class">disabled</xsl:attribute></xsl:if>
+        <a href="{func:linkPage(@offset - 1)}">&#xab;</a>
+      </li>
 
-        <xsl:call-template name="pager-page">
-          <xsl:with-param name="position" select="0"/>
-          <xsl:with-param name="last" select="@total div @perpage"/>
-          <xsl:with-param name="current" select="@offset"/>
-        </xsl:call-template>
+      <xsl:call-template name="pager-page">
+        <xsl:with-param name="position" select="0"/>
+        <xsl:with-param name="last" select="@total div @perpage"/>
+        <xsl:with-param name="current" select="@offset"/>
+      </xsl:call-template>
 
-        <li>
-          <xsl:if test="@total div @perpage &lt; @offset + 1"><xsl:attribute name="class">disabled</xsl:attribute></xsl:if>
-          <a href="{func:linkPage(@offset + 1)}">&#xbb;</a>
-        </li>
-      </ul>
-    </div>
+      <li>
+        <xsl:if test="@total div @perpage &lt; @offset + 1"><xsl:attribute name="class">disabled</xsl:attribute></xsl:if>
+        <a href="{func:linkPage(@offset + 1)}">&#xbb;</a>
+      </li>
+    </ul>
   </xsl:template>
 
   <xsl:template name="pager-page">

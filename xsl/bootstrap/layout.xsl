@@ -29,13 +29,10 @@
           <xsl:call-template name="page-title"/>
         </title>
 
-        <link rel="stylesheet" href="/{/formresult/config/style}.css"/>
-        <link rel="stylesheet" href="/bootstrap/css/bootstrap.css"/>
-        <link rel="stylesheet" href="/Font-Awesome/css/font-awesome.css"/>
-
-        <!-- Enable bootstrap responsive -->
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <link href="/bootstrap/css/bootstrap-responsive.css" rel="stylesheet"/>
+        <link rel="stylesheet" href="/{/formresult/config/style}.css"/>
+        <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="/Font-Awesome/css/font-awesome.css"/>
 
       	<link rel="alternate" type="application/rss+xml" title="RSS - {/formresult/config/title}" href="/rss/"/>
         <link href="/favicon.ico" rel="icon" type="image/x-icon" />
@@ -49,12 +46,12 @@
         <!-- main content -->
         <div id="screen">
           <header>
-            <div class="navbar">
-              <div class="navbar-inner">
-                <a class="brand" href="/">
+            <nav class="navbar navbar-default" role="navigation">
+              <div class="collapse navbar-collapse">
+                <a class="navbar-brand" href="/">
                   <xsl:value-of select="/formresult/config/title"/>
                 </a>
-                <ul class="nav">
+                <ul class="nav navbar-nav">
                   <li class="active"><a href="{func:linkPage(0)}"><i class="icon-home"/> Home</a></li>
                   <li><a href="#"><i class="icon-time"/> By Date</a></li>
                   <li><a href="#"><i class="icon-tag"/> By Topic</a></li>
@@ -64,7 +61,7 @@
                   <li><a href="/about/"><i class="icon-info-sign"/> About</a></li>
                 </ul>
               </div>
-            </div>
+            </nav>
 
             <xsl:call-template name="breadcrumb"/>
           </header>
@@ -80,7 +77,7 @@
           </div>
         </div>
 
-        <script type="text/javascript" src="/js/jquery-1.8.1.min.js"></script>
+        <script type="text/javascript" src="/js/jquery-1.10.2.min.js"></script>
         <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
       </body>
     </html>
