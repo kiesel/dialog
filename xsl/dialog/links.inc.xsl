@@ -83,7 +83,6 @@
     <func:result>
       <xsl:value-of select="concat('/topic/', $topic, '/')"/>
     </func:result>
-   </func:function>
   </func:function>
 
   <func:function name="func:linkByTopic">
