@@ -3,6 +3,7 @@ package de.thekid.dialog.scriptlet;
 import scriptlet.xml.workflow.AbstractXMLScriptlet;
 import scriptlet.xml.XMLScriptletRequest;
 import scriptlet.xml.XMLScriptletResponse;
+import scriptlet.xml.JsondXMLScriptletResponse;
 import scriptlet.xml.XMLScriptletURL;
 
 import native standard.sprintf;
@@ -13,6 +14,22 @@ import native standard.sprintf;
  * @see   http://dialog.friebes.info/
  */
 public class WebsiteScriptlet extends AbstractXMLScriptlet {
+  private string $base = null;
+
+  public __construct(string $package, string $base) {
+    parent::__construct($package, $base);
+    $this.base= $base;
+  }
+
+  /**
+   * Sets the response class
+   *
+   */
+  protected XMLScriptletResponse _response() {
+    $s= new JsondXMLScriptletResponse($this._processor());
+    $s.setBase($this.base);
+    return $s;
+  }
 
   /**
    * Sets the responses XSL stylesheet
@@ -20,7 +37,7 @@ public class WebsiteScriptlet extends AbstractXMLScriptlet {
    */
   protected void _setStylesheet(XMLScriptletRequest? $request, XMLScriptletResponse? $response) {
     $response.setStylesheet(sprintf(
-      '%s/%s.xsl',
+      '%s/%s',
       $request.getProduct(),
       $request.getStateName()
     ));

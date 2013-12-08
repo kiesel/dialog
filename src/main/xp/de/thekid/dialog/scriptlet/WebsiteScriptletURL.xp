@@ -61,6 +61,9 @@ class WebsiteScriptletURL extends XMLScriptletURL {
 
     if ('/about/' == $this.getPath()) {
       $this.setStateName('about');
+      return;
+    }
+
     if (1 == sscanf($this.getPath(), '/imagestrip/%[^/]', $imagestrip)) {
       $this.setStateName('imagestrip');
       $this.setValue('imagestrip', $imagestrip);
