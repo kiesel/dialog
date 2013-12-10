@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:og="http://ogp.me/ns#">
+  <head>
+    <title>
+      {{ config.title }}
+    </title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" href="/{{ config.style }}.css"/>
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/Font-Awesome/css/font-awesome.css"/>
+
+    <link rel="alternate" type="application/rss+xml" title="RSS - {{ config.title }}" href="/rss/"/>
+    <link href="/favicon.ico" rel="icon" type="image/x-icon" />
+
+    <!-- <xsl:call-template name="page-head"/> -->
+
+    <!-- <xsl:call-template name="google-analytics"/> -->
+  </head>
+
+  <body>
+
+    <!-- main content -->
+    <div id="screen">
+      <header>
+        <nav class="navbar navbar-default" role="navigation">
+          <div class="collapse navbar-collapse">
+            <a class="navbar-brand" href="/">
+              {{ config.title }}
+            </a>
+            <ul class="nav navbar-nav">
+              <li class="active"><a href="# {{! {func:linkPage(0)} }}"><i class="icon-home"></i> Home</a></li>
+              <li><a href="#"><i class="icon-time"></i> By Date</a></li>
+              <li><a href="#"><i class="icon-tag"></i> By Topic</a></li>
+              <li><a href="/rss/"><i class="icon-rss"></i> RSS</a></li>
+              <li><a href="/about/"><i class="icon-info-sign"></i> About</a></li>
+            </ul>
+          </div>
+        </nav>
+
+        <!-- <xsl:call-template name="breadcrumb"/> -->
+      </header>
+
+      <div class="content container">
+        Content goees here
+        <!-- <xsl:call-template name="content"/> -->
+
+        <hr/>
+        <p>
+          {{#config.copyright}}
+            <small class="pull-left"><i class="icon-cloud"></i>{{config.copyright}}</small>
+          {{/config.copyright}}
+
+          {{#links.link}}
+            <span class="pull-right">
+              <small class="link_{{attr.id}}">
+                <i class="icon-external-link"></i>
+                  <a href="{{attr.href}}">{{attr.href}}</a>
+              </small>
+            </span>
+          {{/links.link}}
+        </p>
+      </div>
+    </div>
+
+    <script type="text/javascript" src="/js/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+    
+  </body>
+</html>
