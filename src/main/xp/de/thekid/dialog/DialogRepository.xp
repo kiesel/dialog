@@ -85,8 +85,8 @@ public class DialogRepository {
       $image.getName(),
       $image.getWidth(),
       $image.getHeight(),
-      ($image.getExifData() !== null ? $this.json.encode($image.getExifData()) : null),
-      ($image.getIptcData() !== null ? $this.json.encode($image.getIptcData()) : null)
+      ($image.getExifData() !== null ? $this.json.encode($image.getExifData() as string[]) : null),
+      ($image.getIptcData() !== null ? $this.json.encode($image.getIptcData() as string[]) : null)
     );
     $image.setId($this.conn.identity());
   }
