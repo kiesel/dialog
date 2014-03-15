@@ -37,6 +37,16 @@ public class AlbumChapter {
   }
 
   /**
+   * Set Id
+   *
+   * @param   int id
+   */
+  public void withId(int $id) {
+    $this.id= $id;
+    return $this;
+  }
+
+  /**
    * Get id
    *
    * @return  int

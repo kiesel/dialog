@@ -202,7 +202,8 @@ class ConvertSqlite extends \util\cmd\Command {
     $seq= 0;
     foreach ($chapter->images as $image) {
       $this->showProgress();
-      $this->repo->createAlbumImage($chapter, $image, $seq++, false);
+
+      $this->repo->createAlbumImage($chapter, $image, $seq++, in_array($image, $album->highlights));
     }
     $this->showEndProgress();
   }

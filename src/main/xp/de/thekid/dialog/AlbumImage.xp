@@ -43,6 +43,16 @@ public class AlbumImage {
   }
 
   /**
+   * Set Id
+   *
+   * @param   int id
+   */
+  public void withId(int $id) {
+    $this.id= $id;
+    return $this.id;
+  }
+
+  /**
    * Get id
    *
    * @return  int
