@@ -20,6 +20,10 @@ import de.thekid.dialog.SingleShot;
 import de.thekid.dialog.Update;
 import de.thekid.dialog.Topic;
 
+import de.thekid.dialog.DialogRepository;
+import rdbms.sqlite3.SQLite3Connection;
+import rdbms.DSN;
+
 import native standard.unserialize;
 import native standard.sprintf;
 
@@ -29,6 +33,15 @@ import native standard.sprintf;
  */
 public class AbstractDialogState extends scriptlet.xml.workflow.AbstractState {
   protected string $dataLocation = '';
+  private DialogRepository $repo= null;
+
+  private DialogRepository repo() {
+    if (!$this.repo instanceof DialogRepository) {
+      $this.repo= new DialogRepository(new SQLite3Connection(new DSN('sqlite3://./' ~ $this.dataLocation ~ '/dialog.sqlite3?autoconnect=1')));
+    }
+
+    return $this.repo;
+  }
 
   /**
    * Returns index for a given page
@@ -36,7 +49,8 @@ public class AbstractDialogState extends scriptlet.xml.workflow.AbstractState {
    * @param   i page number
    */
   public var getIndexPage(int? $i= 0) {
-    return unserialize(FileUtil::getContents(new File($this.dataLocation ~ 'page_' ~ $i ~ '.idx')));
+    return $this.repo().findElementsByPage($i);
+    // return unserialize(FileUtil::getContents(new File($this.dataLocation ~ 'page_' ~ $i ~ '.idx')));
   }
 
   /**

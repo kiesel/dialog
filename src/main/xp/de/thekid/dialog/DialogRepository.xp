@@ -131,4 +131,90 @@ public class DialogRepository {
       $collection.getCreatedAt()
     );
   }
+
+  public IEntry[] findElementsByPage(int $i) {
+    $res= [];
+
+    $q= $this.conn.query('select index_id, type_id, name from masterindex where parent_id is null limit %d, 5', $i);
+    while ($record= $q.next()) {
+      $res[]= $this.loadElement($record['type_id'], $record['index_id']);
+    }
+
+    var_dump($res);
+    return $res;
+  }
+
+  private IEntry loadElement(int $type, int $id) {
+    switch ($type) {
+      case self::$TYPE_ALBUM:
+        return $this.loadAlbum($id);
+        break;
+
+      case self::$TYPE_SINGLESHOT:
+      return null;
+        return $this.loadSingleShot($id);
+        break;
+
+      case self::$TYPE_COLLECTION:
+      return null;
+        return $this.loadCollection($id);
+        break;
+
+      default: throw new lang.MethodNotImplementedException('Unknown type: ' ~ $type);
+    }
+  }
+
+  public Album loadAlbum(int $id) {
+    $e= $this.conn.query('select * from album where album_id= %d', $id).next();
+
+    $album= new Album($e['name'])
+      .withId($e['album_id'])
+      .withTitle($e['title'])
+      .withDescription($e['description'])
+      .withCreatedAt(new Date($e['created_at']))
+    ;
+
+    foreach ($chapter in $this.loadChapterByAlbum($album.getId())) {
+      $album.withChapter($chapter);
+    }
+
+    return $album;
+  }
+
+  public AlbumChapter[] loadChapterByAlbum(int $id) {
+    $c= $this.conn.query('select * from album_chapter where album_id= %d', $id);
+
+    $res= [];
+    while ($record= $c.next()) {
+      $chapter= new AlbumChapter($record['name'])
+        .withId($record['chapter_id'])
+      ;
+
+      foreach ($image in $this.loadImagesByChapter($chapter.getId())) {
+        $chapter.addImage($image);
+      }
+
+      $res[]= $chapter;
+    }
+
+    return $res;
+  }
+
+  public AlbumImage[] loadImagesByChapter(int $id) {
+    $c= $this.conn.query('select i.* from chapter_image ci, image i where ci.chapter_id= %d and ci.image_id= i.image_id', $id);
+
+    $res= [];
+    while ($record= $c.next()) {
+      $image= new AlbumImage($record['name'])
+        .withWidth($record['width'])
+        .withHeight($record['height'])
+        // .withExifData($this.json.decode($record['exifData'])) // FIXME
+        // .withIptcData($this.json.decode($record['iptcData'])) // FIXME
+      ;
+
+      $res[]= $image;
+    }
+
+    return $res;
+  }
 }
